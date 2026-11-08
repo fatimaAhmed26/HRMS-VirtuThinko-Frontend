@@ -42,6 +42,8 @@ import MyRequests from './pages/self/MyRequests';
 import MyDocuments from './pages/self/MyDocuments';
 import MyContract from './pages/self/MyContract';
 import MyAnnouncements from './pages/self/MyAnnouncements';
+import SelfService from './pages/self/SelfService';
+import Directory from './pages/self/Directory';
 
 export default function App() {
   return (
@@ -55,11 +57,13 @@ export default function App() {
 
           {/* ───── Employee view (everyone) ───── */}
           <Route path="home" element={<EmployeeHome />} />
+          <Route path="my/self-service" element={<SelfService />} />
           <Route path="my/profile" element={<MyProfile />} />
           <Route path="my/requests" element={<MyRequests />} />
           <Route path="my/documents" element={<MyDocuments />} />
           <Route path="my/contract" element={<MyContract />} />
           <Route path="my/announcements" element={<MyAnnouncements />} />
+          <Route path="my/directory" element={<Directory />} />
 
           {/* ───── Leave module (shared by both views) ───── */}
           <Route path="leave">
