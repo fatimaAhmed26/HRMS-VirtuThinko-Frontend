@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+/* VirtuThinko brand: red #C00020 */
+@theme {
+  --color-brand-50: #fdf2f3;
+  --color-brand-100: #fbe3e6;
+  --color-brand-200: #f6c2c9;
+  --color-brand-500: #d81c3a;
+  --color-brand-600: #c00020;
+  --color-brand-700: #a0001b;
+  --color-brand-800: #800016;
+  --color-brand-900: #5c0010;
+  --font-sans: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+}
+
+html, body, #root { height: 100%; }
+body { @apply bg-slate-50 text-slate-800 antialiased; }
+
+/* small shared building blocks used across pages */
+@layer components {
+  .input {
+    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none
+      focus:border-brand-600 focus:ring-2 focus:ring-brand-100 disabled:bg-slate-100;
+  }
+  .label { @apply mb-1 block text-sm font-medium text-slate-700; }
+  .table { @apply w-full text-left text-sm; }
+  .table th { @apply border-b border-slate-200 bg-slate-50 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-slate-500; }
+  .table td { @apply border-b border-slate-100 px-4 py-3; }
+  .table tbody tr:hover { @apply bg-slate-50; }
+}
