@@ -187,8 +187,11 @@ export interface Contract {
   transportAllowance?: Money;
   currency?: string;
   status: string;
+  displayStatus?: string; // active | expiring_soon | renewed | expired | terminated
   state?: 'Active' | 'Inactive' | 'Ended';
+  daysLeft?: number | null;
   notes: string | null;
+  document?: { id: number; originalName: string } | null; // signed copy
   employee?: { id: number; employeeCode: string; firstName: string; lastName: string; country: Entity };
 }
 
@@ -301,6 +304,7 @@ export interface EmployeeRequest {
   createdAt: string;
   type?: { id: number; code: string; name: string; category: string };
   employee?: { id: number; employeeCode: string; firstName: string; lastName: string };
+  resultDocument?: { id: number; originalName: string; visibleToEmployee: boolean } | null;
 }
 
 // ───── announcements & notifications ─────
@@ -314,6 +318,19 @@ export interface Announcement {
   publishAt: string;
   expiresAt: string | null;
   attachmentName: string | null;
+  attachmentMime: string | null;
+  hasAttachment: boolean;
+}
+
+// Colleague directory - work contact details only
+export interface DirectoryEntry {
+  id: number;
+  firstName: string;
+  lastName: string;
+  jobTitle: string | null;
+  email: string;
+  photoUrl: string | null;
+  department: { name: string } | null;
 }
 
 export interface AppNotification {

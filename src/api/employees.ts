@@ -1,6 +1,6 @@
 // /api/employees - list, profile, add, edit, deactivate, history, self-service
 import { api } from '../lib/api';
-import type { Employee, EmployeeListItem, EmploymentType, Entity, Paginated } from '../types';
+import type { DirectoryEntry, Employee, EmployeeListItem, EmploymentType, Entity, Paginated } from '../types';
 
 export interface EmployeeFilters {
   search?: string;
@@ -22,6 +22,10 @@ export const create = (data: Partial<Employee>) => api.post<Employee>('/employee
 export const update = (id: number, data: Partial<Employee>) => api.patch<Employee>(`/employees/${id}`, data).then((r) => r.data);
 export const setStatus = (id: number, status: 'active' | 'inactive', reason?: string) =>
   api.patch<Employee>(`/employees/${id}/status`, { status, reason }).then((r) => r.data);
+
+// colleague directory for everyone (work contact details only)
+export const directory = (search?: string) =>
+  api.get<DirectoryEntry[]>('/employees/directory', { params: { search: search || undefined } }).then((r) => r.data);
 
 // self-service: an employee can only change phone, address and emergency contact
 export const me = () => api.get<Employee>('/employees/me').then((r) => r.data);
