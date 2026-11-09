@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import * as authApi from '../api/auth';
-import { refreshAccessToken, setAccessToken, setSessionExpiredHandler, api } from '../lib/api';
+import { refreshAccessToken, setAccessToken, setSessionExpiredHandler } from '../lib/api';
 import { HR_PERMISSIONS, type Permission } from '../lib/permissions';
 import type { AuthUser } from '../types';
 import { AuthContext, type AuthState } from './useAuth';
@@ -21,8 +21,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     setSessionExpiredHandler(clear);
     refreshAccessToken()
-      .then(() => api.get<AuthUser>('/auth/me'))
-      .then((r) => setUser(r.data))
+      .then(() => authApi.me())
+      .then(setUser)
       .catch(() => clear())
       .finally(() => setLoading(false));
   }, [clear]);
