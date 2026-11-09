@@ -5,6 +5,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { z } from 'zod';
 import { useAuth } from '../auth/useAuth';
 import { Button } from '../components/ui/Button';
+import { Logo } from '../components/ui/Logo';
 import { ErrorMessage } from '../components/ui/Feedback';
 import { HR_PERMISSIONS } from '../lib/permissions';
 
@@ -40,9 +41,8 @@ export default function Login() {
   return (
     <div className="flex min-h-full">
       <div className="hidden flex-1 flex-col justify-between bg-gradient-to-br from-brand-600 to-brand-900 p-12 text-white lg:flex">
-        <div className="flex items-center gap-3">
-          <img src="/favicon.svg" alt="" className="h-10 w-10" />
-          <span className="text-xl font-semibold">VirtuThinko</span>
+        <div className="inline-flex w-fit items-center rounded-xl bg-white px-4 py-3">
+          <Logo className="h-10 max-w-48" />
         </div>
         <div>
           <h1 className="text-4xl font-semibold leading-tight">One portal for HR<br />in Bahrain and Saudi Arabia</h1>
