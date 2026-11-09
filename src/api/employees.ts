@@ -1,5 +1,5 @@
 // /api/employees - list, profile, add, edit, deactivate, history, self-service
-import { api } from '../lib/api';
+import { api, downloadFile } from '../lib/api';
 import type { DirectoryEntry, Employee, EmployeeListItem, EmploymentType, Entity, Paginated } from '../types';
 
 export interface EmployeeFilters {
@@ -31,3 +31,11 @@ export const directory = (search?: string) =>
 export const me = () => api.get<Employee>('/employees/me').then((r) => r.data);
 export const updateMe = (data: Pick<Employee, 'phone' | 'address' | 'emergencyName' | 'emergencyPhone'>) =>
   api.patch<Employee>('/employees/me', data).then((r) => r.data);
+
+// Internship acceptance letter PDF (company letterhead, no signature)
+export function acceptanceLetter(id: number, opts: { date?: string; weeks?: number } = {}) {
+  const q = new URLSearchParams();
+  if (opts.date) q.set('date', opts.date);
+  if (opts.weeks) q.set('weeks', String(opts.weeks));
+  return downloadFile(`/employees/${id}/acceptance-letter${q.size ? `?${q}` : ''}`, 'Internship_Acceptance_Letter.pdf');
+}
