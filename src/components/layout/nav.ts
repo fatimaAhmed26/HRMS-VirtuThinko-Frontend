@@ -1,5 +1,5 @@
 import {
-  Bell, BarChart3, Briefcase, CalendarDays, FileText, Home, LayoutDashboard, Megaphone, Settings, User, Users, Wallet,
+  BarChart3, Briefcase, CalendarDays, Contact, FileSignature, FileText, FolderOpen, Grid2x2, Home, LayoutDashboard, Megaphone, Settings, User, Users, Wallet,
   type LucideIcon,
 } from 'lucide-react';
 import { P, type Permission } from '../../lib/permissions';
@@ -11,6 +11,7 @@ export interface NavLink {
 }
 
 export interface NavSection {
+  group?: string; // small heading shown above this item (e.g. "MY WORK")
   label: string;
   icon: LucideIcon;
   to?: string; // single link with no sub-pages
@@ -70,9 +71,15 @@ export const HR_NAV: NavSection[] = [
   },
 ];
 
-// Employee view (self-service). No payroll here: employees do not see payslips or salary.
+// Employee view (self-service) - same order as the design (Employee · Home, p.65).
+// No payroll here: employees do not see payslips or salary.
 export const EMPLOYEE_NAV: NavSection[] = [
-  { label: 'Home', icon: Home, to: '/home' },
+  { group: 'My work', label: 'Home', icon: Home, to: '/home' },
+  { label: 'Self-service', icon: Grid2x2, to: '/my/self-service' },
+  { label: 'My profile', icon: User, to: '/my/profile' },
+  { label: 'Requests & certificates', icon: FileText, to: '/my/requests' },
+  { label: 'My documents', icon: FolderOpen, to: '/my/documents' },
+  { label: 'My contract', icon: FileSignature, to: '/my/contract' },
   {
     label: 'Leave', icon: CalendarDays,
     links: [
@@ -85,16 +92,7 @@ export const EMPLOYEE_NAV: NavSection[] = [
       { label: 'How leave works', to: '/leave/how-it-works' },
     ],
   },
-  {
-    label: 'My details', icon: User,
-    links: [
-      { label: 'My profile', to: '/my/profile' },
-      { label: 'Requests & certificates', to: '/my/requests' },
-      { label: 'My documents', to: '/my/documents' },
-      { label: 'My contract', to: '/my/contract' },
-    ],
-  },
+  { group: 'Company', label: 'Directory', icon: Contact, to: '/my/directory' },
   { label: 'Announcements', icon: Megaphone, to: '/my/announcements' },
-  { label: 'Notifications', icon: Bell, to: '/notifications' },
-  { label: 'Team', icon: Briefcase, to: '/employees', perms: [P.employeeView] }, // managers
+  { label: 'My team', icon: Briefcase, to: '/employees', perms: [P.employeeView] }, // managers
 ];
