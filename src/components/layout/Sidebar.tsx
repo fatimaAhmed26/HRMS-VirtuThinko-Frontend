@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import { ChevronDown } from 'lucide-react';
+import { useState } from 'react';
 import { NavLink as RouterLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../../auth/useAuth';
 import { Logo } from '../ui/Logo';
@@ -14,6 +15,13 @@ export function Sidebar({ sections }: { sections: NavSection[] }) {
   const { can } = useAuth();
   const { pathname } = useLocation();
   const allowed = (perms?: Parameters<typeof can>) => !perms || perms.length === 0 || can(...perms);
+
+  // One section open at a time. Moving to another page opens that page's section;
+  // clicking a section heading opens or closes it.
+  const current = sections.find((s) => !s.to && isInSection(s, pathname))?.label ?? null;
+  const [toggled, setToggled] = useState<{ path: string; open: string | null } | null>(null);
+  const openLabel = toggled?.path === pathname ? toggled.open : current;
+  const toggle = (label: string) => setToggled({ path: pathname, open: openLabel === label ? null : label });
 
   return (
     <aside className="flex w-68 shrink-0 flex-col bg-gradient-to-b from-brand-700 to-brand-900 text-white">
@@ -50,14 +58,13 @@ export function Sidebar({ sections }: { sections: NavSection[] }) {
           return (
             <div key={section.label}>
               {heading}
-              {/* only the section you're in stays open */}
-              <RouterLink to={links[0].to}
-                className={clsx('flex items-center gap-3 rounded-lg px-3 py-2', active ? 'bg-white/15 font-medium' : 'text-white/80 hover:bg-white/10')}>
+              <button type="button" onClick={() => toggle(section.label)} aria-expanded={openLabel === section.label}
+                className={clsx('flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left', active ? 'bg-white/15 font-medium' : 'text-white/80 hover:bg-white/10')}>
                 <Icon className="h-4 w-4" />
                 <span className="flex-1">{section.label}</span>
-                <ChevronDown className={clsx('h-4 w-4 transition', active ? 'rotate-180' : 'opacity-60')} />
-              </RouterLink>
-              {active && (
+                <ChevronDown className={clsx('h-4 w-4 transition', openLabel === section.label ? 'rotate-180' : 'opacity-60')} />
+              </button>
+              {openLabel === section.label && (
                 <div className="ml-7 mt-1 space-y-0.5 border-l border-white/15 pl-3">
                   {links.map((l) => (
                     <RouterLink key={l.to} to={l.to} end
