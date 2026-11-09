@@ -2,12 +2,12 @@ import dayjs from 'dayjs';
 // Leave helpers shared by the leave screens. Day counting matches the backend (leave.rules.ts).
 import type { LeaveType, PublicHoliday } from '../types';
 
-export const WEEKEND = [5, 6]; // Friday, Saturday (Bahrain and Saudi)
+const WEEKEND = [5, 6]; // Friday, Saturday (Bahrain and Saudi)
 
 // Dates travel as "YYYY-MM-DD"; the API sends "2026-11-20T00:00:00.000Z", so the first 10 characters are the date
 export const dateKey = (d: string | Date) => (typeof d === 'string' ? d.slice(0, 10) : d.toISOString().slice(0, 10));
 const utc = (key: string) => new Date(key + 'T00:00:00Z');
-export const weekday = (key: string) => utc(key).getUTCDay();
+const weekday = (key: string) => utc(key).getUTCDay();
 export const isWeekend = (key: string) => WEEKEND.includes(weekday(key));
 
 export function addDays(key: string, n: number) {
@@ -36,7 +36,7 @@ export function countDays(start: string, end: string, workingDaysOnly: boolean, 
 export const inRange = (key: string, start: string, end: string) => key >= dateKey(start) && key <= dateKey(end);
 
 // Colour per leave type (dot / chip on calendars and lists)
-export const TYPE_COLOR: Record<string, string> = {
+const TYPE_COLOR: Record<string, string> = {
   ANNUAL: 'bg-blue-100 text-blue-800 border-blue-200',
   SICK: 'bg-amber-100 text-amber-800 border-amber-200',
   MATERNITY: 'bg-pink-100 text-pink-800 border-pink-200',
@@ -51,7 +51,6 @@ export const TYPE_COLOR: Record<string, string> = {
 };
 export const typeColor = (code: string) => TYPE_COLOR[code] ?? 'bg-slate-100 text-slate-700 border-slate-200';
 
-export const HOLIDAY_COLOR = 'bg-red-50 text-red-700 border-red-200';
 
 // The backend stores one row per holiday day; group consecutive days with the same name
 export interface HolidayRange {
