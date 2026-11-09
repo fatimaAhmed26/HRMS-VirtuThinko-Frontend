@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import type { HrDocument } from '../../types';
 
 // HR is alerted before a document expires; the employee sees the same status
-export const RENEW_WINDOW_DAYS = 90;
+const RENEW_WINDOW_DAYS = 90;
 
 export function expiryStatus(doc: Pick<HrDocument, 'expiryDate'>) {
   if (!doc.expiryDate) return { label: 'On file', tone: 'ok' as const, daysLeft: null };
