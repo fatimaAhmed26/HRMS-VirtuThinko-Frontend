@@ -165,6 +165,31 @@ export interface LeaveRequest {
   approvals: { id: number; stage: 'manager' | 'hr'; decision: 'approved' | 'rejected'; comment: string | null; approverName: string; createdAt: string }[];
 }
 
+// Team calendar entry (approved leave or a planner reservation)
+export interface CalendarEntry {
+  id: number;
+  employeeId: number;
+  name: string;
+  department: string | null;
+  startDate: string;
+  endDate: string;
+  type: string; // leave type code, or PRIVATE when colleagues only see "On leave"
+  typeName: string;
+  days?: number;
+  mine?: boolean;
+}
+
+export interface LeaveReservation {
+  id: number;
+  employeeId: number;
+  leaveTypeId: number;
+  startDate: string;
+  endDate: string;
+  note: string | null;
+  remindedAt: string | null;
+  leaveType: { id: number; code: string; name: string };
+}
+
 export interface PublicHoliday {
   id: number;
   country: Entity;
