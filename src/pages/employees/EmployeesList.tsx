@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { GraduationCap, Search, UserPlus } from 'lucide-react';
+import { FileText, GraduationCap, Search, UserPlus } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import * as employeesApi from '../../api/employees';
@@ -13,7 +13,8 @@ import { Loading } from '../../components/ui/Spinner';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { fmtDate, fullName } from '../../lib/format';
 import { P } from '../../lib/permissions';
-import { EMPLOYMENT_TYPES, type EmploymentType } from '../../types';
+import { EMPLOYMENT_TYPES, type EmployeeListItem, type EmploymentType } from '../../types';
+import { AcceptanceLetterDialog } from './AcceptanceLetterDialog';
 
 // All employees. With internsOnly it becomes the Interns page (interns have no portal login).
 export default function EmployeesList({ internsOnly = false }: { internsOnly?: boolean }) {
@@ -23,6 +24,7 @@ export default function EmployeesList({ internsOnly = false }: { internsOnly?: b
   const [employmentType, setEmploymentType] = useState<EmploymentType | ''>(internsOnly ? 'Intern' : '');
   const [status, setStatus] = useState<'active' | 'inactive' | ''>('active');
   const [page, setPage] = useState(1);
+  const [letterFor, setLetterFor] = useState<EmployeeListItem | null>(null);
 
   const filters = {
     search: search || undefined,
@@ -86,7 +88,7 @@ export default function EmployeesList({ internsOnly = false }: { internsOnly?: b
           <div className={`overflow-x-auto ${isFetching ? 'opacity-60' : ''}`}>
             <table className="table">
               <thead>
-                <tr><th>Employee</th><th>Job title</th><th>Department</th><th>Type</th><th>Entity</th><th>Joined</th><th>Status</th></tr>
+                <tr><th>Employee</th><th>Job title</th><th>Department</th><th>Type</th><th>Entity</th><th>Joined</th><th>Status</th>{internsOnly && <th />}</tr>
               </thead>
               <tbody>
                 {data.items.map((e) => (
@@ -101,6 +103,13 @@ export default function EmployeesList({ internsOnly = false }: { internsOnly?: b
                     <td>{e.country}</td>
                     <td>{fmtDate(e.hireDate)}</td>
                     <td><StatusBadge status={e.status} /></td>
+                    {internsOnly && (
+                      <td className="text-right">
+                        <Button variant="secondary" className="whitespace-nowrap px-3 py-1" onClick={() => setLetterFor(e)}>
+                          <FileText className="h-4 w-4" /> Acceptance letter
+                        </Button>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
@@ -118,6 +127,7 @@ export default function EmployeesList({ internsOnly = false }: { internsOnly?: b
           </div>
         )}
       </Card>
+      <AcceptanceLetterDialog intern={letterFor} onClose={() => setLetterFor(null)} />
     </>
   );
 }
