@@ -1,6 +1,6 @@
 // /api/leave - types, holidays, balances, requests and approvals (Bahrain and Saudi rules)
 import { api } from '../lib/api';
-import type { Entity, LeaveBalance, LeaveRequest, LeaveStatus, LeaveType, Paginated, PublicHoliday } from '../types';
+import type { CalendarEntry, Entity, LeaveBalance, LeaveRequest, LeaveReservation, LeaveStatus, LeaveType, Paginated, PublicHoliday } from '../types';
 
 export const types = (country: Entity) => api.get<LeaveType[]>('/leave/types', { params: { country } }).then((r) => r.data);
 export const updateType = (id: number, data: Partial<LeaveType>) => api.patch<LeaveType>(`/leave/types/${id}`, data).then((r) => r.data);
@@ -37,3 +37,13 @@ export const getRequest = (id: number) => api.get<LeaveRequest>(`/leave/requests
 export const approve = (id: number, comment?: string) => api.post<LeaveRequest>(`/leave/requests/${id}/approve`, { comment }).then((r) => r.data);
 export const reject = (id: number, comment?: string) => api.post<LeaveRequest>(`/leave/requests/${id}/reject`, { comment }).then((r) => r.data);
 export const cancel = (id: number) => api.post<LeaveRequest>(`/leave/requests/${id}/cancel`).then((r) => r.data);
+
+// team calendar: approved leave and planner reservations between two dates (max 3 months)
+export const calendar = (from: string, to: string) =>
+  api.get<{ leave: CalendarEntry[]; reservations: CalendarEntry[] }>('/leave/calendar', { params: { from, to } }).then((r) => r.data);
+
+// leave planner (Annual and Hajj only)
+export const myReservations = () => api.get<LeaveReservation[]>('/leave/reservations/me').then((r) => r.data);
+export const reserve = (data: { leaveTypeId: number; startDate: string; endDate: string; note?: string }) =>
+  api.post<LeaveReservation>('/leave/reservations', data).then((r) => r.data);
+export const cancelReservation = (id: number) => api.delete(`/leave/reservations/${id}`);
