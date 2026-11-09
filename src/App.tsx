@@ -71,17 +71,15 @@ export default function App() {
             <Route path="calendar" element={<CompanyCalendar />} />
             <Route path="holidays" element={<PublicHolidays />} />
             <Route path="policy" element={<LeavePolicy />} />
-            <Route path="planner" element={<LeavePlanner />} />
             <Route path="how-it-works" element={<HowLeaveWorks />} />
             <Route element={<RequirePermission any={[P.leaveRequest]} />}>
               <Route path="request" element={<RequestLeave />} />
+              <Route path="planner" element={<LeavePlanner />} />
             </Route>
             <Route element={<RequirePermission any={[P.leaveApprove, P.leaveManage]} />}>
               <Route path="approvals" element={<Approvals />} />
             </Route>
-            <Route element={<RequirePermission any={[P.leaveManage]} />}>
-              <Route path="data" element={<LeavesData />} />
-            </Route>
+            <Route path="data" element={<LeavesData />} />
           </Route>
 
           {/* ───── HR view ───── */}
