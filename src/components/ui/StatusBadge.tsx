@@ -20,11 +20,14 @@ const colors: Record<string, string> = {
   expired: 'bg-slate-100 text-slate-600 ring-slate-500/20',
 };
 
+// Friendlier wording for a few statuses
+const labels: Record<string, string> = { pending_manager: 'With manager', pending_hr: 'With HR', in_progress: 'In progress', under_review: 'Under review' };
+
 export function StatusBadge({ status }: { status: string }) {
   const key = status.toLowerCase();
   return (
     <span className={clsx('inline-flex rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset', colors[key] ?? colors.draft)}>
-      {humanize(key)}
+      {labels[key] ?? humanize(key)}
     </span>
   );
 }
