@@ -8,6 +8,7 @@ export interface UploadInput {
   category: string; // leave_attachment | id_copy | certificate | contract | personal | request_attachment | other
   title: string;
   expiryDate?: string;
+  remindDaysBefore?: number; // alert HR this many days before expiryDate (default: Settings)
   visibleToEmployee?: boolean;
   notes?: string;
 }
