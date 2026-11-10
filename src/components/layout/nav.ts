@@ -30,7 +30,6 @@ export const HR_NAV: NavSection[] = [
       { label: 'Interns', to: '/interns' },
       { label: 'Contracts', to: '/contracts', perms: [P.contractView] },
       { label: 'Departments', to: '/departments', perms: [P.departmentView] },
-      { label: 'Document scanner', to: '/employees/scanner', perms: [P.documentView] },
     ],
   },
   {
