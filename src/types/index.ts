@@ -100,6 +100,95 @@ export interface Employee extends EmployeeListItem {
   emergencyName: string | null;
   emergencyPhone: string | null;
   user: { id: number; username: string; status: string } | null;
+
+  // onboarding form VTHR-ONB-F01
+  fullNamePassport: string | null;
+  fullNameId: string | null;
+  fullNameArabic: string | null;
+  placeOfBirth: string | null;
+  otherNationality: string | null;
+  maritalStatus: MaritalStatus | null;
+  childrenCount: number | null;
+  idExpiry: string | null;
+  passportNumber: string | null;
+  passportPlaceOfIssue: string | null;
+  passportIssueDate: string | null;
+  passportExpiry: string | null;
+  permitNumber: string | null;
+  permitExpiry: string | null;
+  socialInsuranceNumber: string | null;
+  drivingLicenceNumber: string | null;
+  addressFlat: string | null;
+  addressBuilding: string | null;
+  addressRoad: string | null;
+  addressBlock: string | null;
+  addressCity: string | null;
+  addressCountry: string | null;
+  homeCountryAddress: string | null;
+  altPhone: string | null;
+  personalEmail: string | null;
+  emergencyRelationship: string | null;
+  emergencyAltPhone: string | null;
+  emergencyAddress: string | null;
+  emergency2Name: string | null;
+  emergency2Relationship: string | null;
+  emergency2Phone: string | null;
+  emergency2AltPhone: string | null;
+  emergency2Address: string | null;
+  languages: string | null;
+  mayContactEmployers: boolean | null;
+  hasRestrictiveClauses: boolean | null;
+  // medical: null unless you can edit employees (or it is your own record)
+  hasMedicalCondition: boolean | null;
+  medicalDetails: string | null;
+  bloodGroup: string | null;
+  regularMedication: string | null;
+  bankBranch: string | null;
+  bankAccountHolder: string | null;
+  documentChecklist: Record<string, { na?: boolean; received?: boolean }> | null;
+  declarationAccepted: boolean;
+  declarationName: string | null;
+  declarationDate: string | null;
+  declarationPlace: string | null;
+  verifiedByUserId: number | null;
+  verifiedAt: string | null;
+  hrRemarks: string | null;
+  dependants: Dependant[];
+  qualifications: Qualification[];
+  previousEmployments: PreviousEmployment[];
+}
+
+export type MaritalStatus = 'Single' | 'Married' | 'Divorced' | 'Widowed';
+
+export interface Dependant {
+  fullName: string;
+  relationship: 'Spouse' | 'Son' | 'Daughter' | 'Parent' | 'Other';
+  birthDate: string | null;
+  nationality: string | null;
+  idNumber: string | null;
+}
+
+export interface Qualification {
+  kind: 'education' | 'certification';
+  title: string;
+  institution: string | null;
+  country: string | null;
+  year: number | null;
+  grade: string | null;
+  obtainedDate: string | null;
+  expiryDate: string | null;
+}
+
+export interface PreviousEmployment {
+  employerName: string;
+  jobTitle: string | null;
+  fromDate: string | null;
+  toDate: string | null;
+  reasonForLeaving: string | null;
+  refName: string | null;
+  refJobTitle: string | null;
+  refPhone: string | null;
+  refEmail: string | null;
 }
 
 // ───── leave ─────
