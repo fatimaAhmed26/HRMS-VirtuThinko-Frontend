@@ -2,7 +2,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { useState, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import * as contractsApi from '../../api/contracts';
 import * as documentsApi from '../../api/documents';
 import * as employeesApi from '../../api/employees';
@@ -17,6 +17,7 @@ import type { Employee } from '../../types';
 import { EmploymentSection } from './onboarding/EmploymentSection';
 import { EntitySection } from './onboarding/EntitySection';
 import { ChecklistSection, DeclarationSection, HrOnlySection, MedicalSection, SalarySection } from './onboarding/FinalSections';
+import type { ImportResult } from './import/fromImport';
 import { ContactSection, EmergencySection, IdSection, PersonalSection } from './onboarding/PersonalSections';
 import { DependantsSection, PreviousEmploymentSection, QualificationsSection } from './onboarding/RepeatingSections';
 import {
@@ -42,10 +43,12 @@ export default function AddEmployee() {
   const { user, can } = useAuth();
   const canContract = can(P.contractManage);
 
-  const [draftRestored] = useState(() => loadDraft() !== null);
-  const [f, setForm] = useState<OnboardingForm>(() => loadDraft() ?? initialForm());
-  const [files, setFiles] = useState<Partial<Record<ChecklistKey, File>>>({});
-  const [submitted, setSubmitted] = useState(false);
+  // arriving from "Import completed form": start from what was read; otherwise from a saved draft
+  const imported = (useLocation().state as { imported?: ImportResult } | null)?.imported ?? null;
+  const [draftRestored] = useState(() => !imported && loadDraft() !== null);
+  const [f, setForm] = useState<OnboardingForm>(() => imported?.form ?? loadDraft() ?? initialForm());
+  const [files, setFiles] = useState<Partial<Record<ChecklistKey, File>>>(() => imported?.files ?? {});
+  const [submitted, setSubmitted] = useState(() => imported !== null);
   const [fileError, setFileError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [saved, setSaved] = useState<Saved | null>(null);
@@ -175,7 +178,7 @@ export default function AddEmployee() {
           New Employee Information Form · VTHR-ONB-F01. Enter details exactly as on official documents, in English. Use N/A where a field does not apply.
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
-          <Button type="button" variant="secondary" disabled title="Coming soon">Import completed form</Button>
+          <Button type="button" variant="secondary" onClick={() => navigate('/employees/import')}>Import completed form</Button>
           <Button type="button" variant="secondary" disabled title="Coming soon">Send form to employee</Button>
         </div>
         <nav aria-label="Form sections" className="mt-4 flex flex-wrap gap-2">
@@ -189,6 +192,11 @@ export default function AddEmployee() {
         </nav>
       </div>
 
+      {imported && !notice && (
+        <div className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 text-sm text-blue-800">
+          Filled in from <b>{imported.fileName}</b>. Check the highlighted sections, add the work email if it was not on the form, then save.
+        </div>
+      )}
       {draftRestored && !notice && (
         <div className="flex items-center justify-between rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 text-sm text-blue-800">
           A saved draft was restored.
