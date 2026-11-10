@@ -16,6 +16,7 @@ import AddEmployee from './pages/employees/AddEmployee';
 import AddIntern from './pages/employees/AddIntern';
 import Departments from './pages/employees/Departments';
 import Contracts from './pages/employees/Contracts';
+import DocumentScanner from './pages/employees/DocumentScanner';
 import LeaveDashboard from './pages/leave/LeaveDashboard';
 import RequestLeave from './pages/leave/RequestLeave';
 import LeavesData from './pages/leave/LeavesData';
@@ -95,6 +96,9 @@ export default function App() {
           <Route element={<RequirePermission any={[P.employeeCreate]} />}>
             <Route path="employees/new" element={<AddEmployee />} />
             <Route path="interns/new" element={<AddIntern />} />
+          </Route>
+          <Route element={<RequirePermission any={[P.documentView]} />}>
+            <Route path="employees/scanner" element={<DocumentScanner />} />
           </Route>
           <Route element={<RequirePermission any={[P.departmentView, P.employeeView]} />}>
             <Route path="departments" element={<Departments />} />
