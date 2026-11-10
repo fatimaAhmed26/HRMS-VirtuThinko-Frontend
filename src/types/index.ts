@@ -319,6 +319,7 @@ export interface HrDocument {
   mimeType: string;
   size: number;
   expiryDate: string | null;
+  remindDaysBefore: number | null;
   visibleToEmployee: boolean;
   notes: string | null;
   createdAt: string;
