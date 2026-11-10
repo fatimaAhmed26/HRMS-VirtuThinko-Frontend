@@ -18,7 +18,8 @@ export const list = (params: EmployeeFilters = {}) =>
   api.get<Paginated<EmployeeListItem>>('/employees', { params }).then((r) => r.data);
 export const get = (id: number) => api.get<Employee>(`/employees/${id}`).then((r) => r.data);
 export const history = (id: number) => api.get(`/employees/${id}/history`).then((r) => r.data);
-export const create = (data: Partial<Employee>) => api.post<Employee>('/employees', data).then((r) => r.data);
+// the onboarding form sends dependants / qualifications / previousEmployments as arrays
+export const create = (data: Record<string, unknown>) => api.post<Employee>('/employees', data).then((r) => r.data);
 export const update = (id: number, data: Partial<Employee>) => api.patch<Employee>(`/employees/${id}`, data).then((r) => r.data);
 export const setStatus = (id: number, status: 'active' | 'inactive', reason?: string) =>
   api.patch<Employee>(`/employees/${id}/status`, { status, reason }).then((r) => r.data);
