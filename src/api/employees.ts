@@ -17,7 +17,14 @@ export interface EmployeeFilters {
 export const list = (params: EmployeeFilters = {}) =>
   api.get<Paginated<EmployeeListItem>>('/employees', { params }).then((r) => r.data);
 export const get = (id: number) => api.get<Employee>(`/employees/${id}`).then((r) => r.data);
-export const history = (id: number) => api.get(`/employees/${id}/history`).then((r) => r.data);
+export interface HistoryEntry {
+  id: number;
+  action: string; // employee.create, employee.update, letter.issued, ...
+  changes: Record<string, unknown> | null;
+  actor: { id: number; username: string | null } | null;
+  createdAt: string;
+}
+export const history = (id: number) => api.get<HistoryEntry[]>(`/employees/${id}/history`).then((r) => r.data);
 // the onboarding form sends dependants / qualifications / previousEmployments as arrays
 export const create = (data: Record<string, unknown>) => api.post<Employee>('/employees', data).then((r) => r.data);
 export const update = (id: number, data: Partial<Employee>) => api.patch<Employee>(`/employees/${id}`, data).then((r) => r.data);
