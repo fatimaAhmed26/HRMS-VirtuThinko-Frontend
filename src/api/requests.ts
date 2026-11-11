@@ -16,6 +16,10 @@ export const list = (params: { status?: RequestStatus; typeId?: number; employee
 export const get = (id: number) => api.get<EmployeeRequest>(`/requests/${id}`).then((r) => r.data);
 
 // HR flow: start -> generate (letters) -> approve -> complete (releases it to the employee)
+// HR issues a letter from the employee profile: created, generated and closed in one step
+export const issue = (data: { employeeId: number; typeId: number; purpose: string; addressedTo?: string }) =>
+  api.post<EmployeeRequest>('/requests/issue', data).then((r) => r.data);
+
 export const start = (id: number) => api.post<EmployeeRequest>(`/requests/${id}/start`).then((r) => r.data);
 export const generate = (id: number) => api.post<EmployeeRequest>(`/requests/${id}/generate`).then((r) => r.data);
 export const approve = (id: number, comment?: string) => api.post<EmployeeRequest>(`/requests/${id}/approve`, { comment }).then((r) => r.data);
