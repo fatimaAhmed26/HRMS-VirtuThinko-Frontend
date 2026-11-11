@@ -17,6 +17,7 @@ import AddIntern from './pages/employees/AddIntern';
 import Departments from './pages/employees/Departments';
 import Contracts from './pages/employees/Contracts';
 import ImportForm from './pages/employees/ImportForm';
+import EditEmployee from './pages/employees/EditEmployee';
 import LeaveDashboard from './pages/leave/LeaveDashboard';
 import RequestLeave from './pages/leave/RequestLeave';
 import LeavesData from './pages/leave/LeavesData';
@@ -92,6 +93,9 @@ export default function App() {
             <Route path="employees" element={<EmployeesList />} />
             <Route path="employees/:id" element={<EmployeeProfile />} />
             <Route path="interns" element={<EmployeesList internsOnly />} />
+          </Route>
+          <Route element={<RequirePermission any={[P.employeeEdit]} />}>
+            <Route path="employees/:id/edit" element={<EditEmployee />} />
           </Route>
           <Route element={<RequirePermission any={[P.employeeCreate]} />}>
             <Route path="employees/new" element={<AddEmployee />} />
