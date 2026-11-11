@@ -16,3 +16,4 @@ export const COUNTRY_NAMES: Record<string, string> = { BH: 'Bahrain', SA: 'Saudi
 
 // "pending_manager" -> "Pending manager"
 export const humanize = (s: string) => (s.charAt(0).toUpperCase() + s.slice(1)).replace(/_/g, ' ');
+export const yesNo = (v: boolean | null | undefined) => (v === true ? 'Yes' : v === false ? 'No' : null);
