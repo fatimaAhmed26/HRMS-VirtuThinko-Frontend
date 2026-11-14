@@ -1,6 +1,6 @@
 // /api/employees - list, profile, add, edit, deactivate, history, self-service
 import { api, downloadFile } from '../lib/api';
-import type { DirectoryEntry, Employee, EmployeeListItem, EmploymentType, Entity, Paginated } from '../types';
+import type { DirectoryEntry, Employee, EmployeeListItem, EmploymentType, Entity, InternListItem, Paginated } from '../types';
 
 export interface EmployeeFilters {
   search?: string;
@@ -40,10 +40,16 @@ export const me = () => api.get<Employee>('/employees/me').then((r) => r.data);
 export const updateMe = (data: Pick<Employee, 'phone' | 'address' | 'emergencyName' | 'emergencyPhone'>) =>
   api.patch<Employee>('/employees/me', data).then((r) => r.data);
 
-// Internship acceptance letter PDF (company letterhead, no signature)
-export function acceptanceLetter(id: number, opts: { date?: string; weeks?: number } = {}) {
+export const interns = () => api.get<InternListItem[]>('/employees/interns').then((r) => r.data);
+
+export type InternLetter = 'acceptance-letter' | 'proposal-form';
+const letterUrl = (id: number, kind: InternLetter, opts: { date?: string; weeks?: number } = {}) => {
   const q = new URLSearchParams();
-  if (opts.date) q.set('date', opts.date);
-  if (opts.weeks) q.set('weeks', String(opts.weeks));
-  return downloadFile(`/employees/${id}/acceptance-letter${q.size ? `?${q}` : ''}`, 'Internship_Acceptance_Letter.pdf');
-}
+  if (kind === 'acceptance-letter' && opts.date) q.set('date', opts.date);
+  if (kind === 'acceptance-letter' && opts.weeks) q.set('weeks', String(opts.weeks));
+  return `/employees/${id}/${kind}${q.size ? `?${q}` : ''}`;
+};
+export const internLetterBlob = (id: number, kind: InternLetter, opts?: { date?: string; weeks?: number }) =>
+  api.get<Blob>(letterUrl(id, kind, opts), { responseType: 'blob' }).then((r) => r.data);
+export const internLetterDownload = (id: number, kind: InternLetter, opts?: { date?: string; weeks?: number }) =>
+  downloadFile(letterUrl(id, kind, opts), kind === 'proposal-form' ? 'Proposal_Acceptance_Form.pdf' : 'Internship_Acceptance_Letter.pdf');
