@@ -13,7 +13,10 @@ import Reports from './pages/hr/Reports';
 import EmployeesList from './pages/employees/EmployeesList';
 import EmployeeProfile from './pages/employees/EmployeeProfile';
 import AddEmployee from './pages/employees/AddEmployee';
-import AddIntern from './pages/employees/AddIntern';
+import EditIntern from './pages/interns/EditIntern';
+import { InternForm } from './pages/interns/InternForm';
+import InternLetter from './pages/interns/InternLetter';
+import InternsList from './pages/interns/InternsList';
 import Departments from './pages/employees/Departments';
 import Contracts from './pages/employees/Contracts';
 import ImportForm from './pages/employees/ImportForm';
@@ -92,15 +95,17 @@ export default function App() {
           <Route element={<RequirePermission any={[P.employeeView]} />}>
             <Route path="employees" element={<EmployeesList />} />
             <Route path="employees/:id" element={<EmployeeProfile />} />
-            <Route path="interns" element={<EmployeesList internsOnly />} />
+            <Route path="interns" element={<InternsList />} />
+            <Route path="interns/:id/letter" element={<InternLetter />} />
           </Route>
           <Route element={<RequirePermission any={[P.employeeEdit]} />}>
             <Route path="employees/:id/edit" element={<EditEmployee />} />
+            <Route path="interns/:id/edit" element={<EditIntern />} />
           </Route>
           <Route element={<RequirePermission any={[P.employeeCreate]} />}>
             <Route path="employees/new" element={<AddEmployee />} />
             <Route path="employees/import" element={<ImportForm />} />
-            <Route path="interns/new" element={<AddIntern />} />
+            <Route path="interns/new" element={<InternForm />} />
           </Route>
           <Route element={<RequirePermission any={[P.departmentView, P.employeeView]} />}>
             <Route path="departments" element={<Departments />} />
