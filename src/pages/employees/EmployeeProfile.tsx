@@ -127,7 +127,7 @@ export default function EmployeeProfile() {
           {can(P.employeeDeactivate) && (
             <Button variant="secondary" onClick={() => setStatusOpen(true)}>{emp.status === 'active' ? 'Deactivate' : 'Reactivate'}</Button>
           )}
-          {can(P.employeeEdit) && <Link to={`/employees/${emp.id}/edit`}><Button variant="secondary">Edit</Button></Link>}
+          {can(P.employeeEdit) && <Link to={emp.employmentType === 'Intern' ? `/interns/${emp.id}/edit` : `/employees/${emp.id}/edit`}><Button variant="secondary">Edit</Button></Link>}
           {can(P.requestProcess) && <Button onClick={() => { setLetterHint(true); open('letters'); }}>Generate letter</Button>}
         </div>
       </header>
