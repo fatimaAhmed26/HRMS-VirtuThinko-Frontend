@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { FileText, GraduationCap, Search, UserPlus } from 'lucide-react';
+import { Search, UserPlus } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import * as employeesApi from '../../api/employees';
@@ -13,23 +13,20 @@ import { Loading } from '../../components/ui/Spinner';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { fmtDate, fullName } from '../../lib/format';
 import { P } from '../../lib/permissions';
-import { EMPLOYMENT_TYPES, type EmployeeListItem, type EmploymentType } from '../../types';
-import { AcceptanceLetterDialog } from './AcceptanceLetterDialog';
+import { EMPLOYMENT_TYPES, type EmploymentType } from '../../types';
 
-// All employees. With internsOnly it becomes the Interns page (interns have no portal login).
-export default function EmployeesList({ internsOnly = false }: { internsOnly?: boolean }) {
+export default function EmployeesList() {
   const { can } = useAuth();
   const [search, setSearch] = useState('');
   const [departmentId, setDepartmentId] = useState('');
-  const [employmentType, setEmploymentType] = useState<EmploymentType | ''>(internsOnly ? 'Intern' : '');
+  const [employmentType, setEmploymentType] = useState<EmploymentType | ''>('');
   const [status, setStatus] = useState<'active' | 'inactive' | ''>('active');
   const [page, setPage] = useState(1);
-  const [letterFor, setLetterFor] = useState<EmployeeListItem | null>(null);
 
   const filters = {
     search: search || undefined,
     departmentId: departmentId ? Number(departmentId) : undefined,
-    employmentType: (internsOnly ? 'Intern' : employmentType) || undefined,
+    employmentType: employmentType || undefined,
     status: status || undefined,
     page,
     pageSize: 20,
@@ -46,13 +43,9 @@ export default function EmployeesList({ internsOnly = false }: { internsOnly?: b
   return (
     <>
       <PageHeader
-        title={internsOnly ? 'Interns' : 'All employees'}
-        subtitle={data ? `${data.total} ${internsOnly ? 'intern' : 'employee'}${data.total === 1 ? '' : 's'}` : undefined}
-        actions={can(P.employeeCreate) && (
-          internsOnly
-            ? <Link to="/interns/new"><Button><GraduationCap className="h-4 w-4" /> Add intern</Button></Link>
-            : <Link to="/employees/new"><Button><UserPlus className="h-4 w-4" /> Add employee</Button></Link>
-        )}
+        title="All employees"
+        subtitle={data ? `${data.total} employee${data.total === 1 ? '' : 's'}` : undefined}
+        actions={can(P.employeeCreate) && <Link to="/employees/new"><Button><UserPlus className="h-4 w-4" /> Add employee</Button></Link>}
       />
 
       <Card>
@@ -66,12 +59,10 @@ export default function EmployeesList({ internsOnly = false }: { internsOnly?: b
             {departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
           </select>
           <div className="flex gap-3">
-            {!internsOnly && (
-              <select className="input" value={employmentType} onChange={(e) => resetPage(setEmploymentType)(e.target.value as EmploymentType | '')}>
-                <option value="">All types</option>
-                {EMPLOYMENT_TYPES.map((t) => <option key={t}>{t}</option>)}
-              </select>
-            )}
+            <select className="input" value={employmentType} onChange={(e) => resetPage(setEmploymentType)(e.target.value as EmploymentType | '')}>
+              <option value="">All types</option>
+              {EMPLOYMENT_TYPES.map((t) => <option key={t}>{t}</option>)}
+            </select>
             <select className="input" value={status} onChange={(e) => resetPage(setStatus)(e.target.value as 'active' | 'inactive' | '')}>
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
@@ -88,7 +79,7 @@ export default function EmployeesList({ internsOnly = false }: { internsOnly?: b
           <div className={`overflow-x-auto ${isFetching ? 'opacity-60' : ''}`}>
             <table className="table">
               <thead>
-                <tr><th>Employee</th><th>Job title</th><th>Department</th><th>Type</th><th>Entity</th><th>Joined</th><th>Status</th>{internsOnly && <th />}</tr>
+                <tr><th>Employee</th><th>Job title</th><th>Department</th><th>Type</th><th>Entity</th><th>Joined</th><th>Status</th></tr>
               </thead>
               <tbody>
                 {data.items.map((e) => (
@@ -103,13 +94,6 @@ export default function EmployeesList({ internsOnly = false }: { internsOnly?: b
                     <td>{e.country}</td>
                     <td>{fmtDate(e.hireDate)}</td>
                     <td><StatusBadge status={e.status} /></td>
-                    {internsOnly && (
-                      <td className="text-right">
-                        <Button variant="secondary" className="whitespace-nowrap px-3 py-1" onClick={() => setLetterFor(e)}>
-                          <FileText className="h-4 w-4" /> Acceptance letter
-                        </Button>
-                      </td>
-                    )}
                   </tr>
                 ))}
               </tbody>
@@ -127,7 +111,6 @@ export default function EmployeesList({ internsOnly = false }: { internsOnly?: b
           </div>
         )}
       </Card>
-      <AcceptanceLetterDialog intern={letterFor} onClose={() => setLetterFor(null)} />
     </>
   );
 }
