@@ -153,6 +153,16 @@ export interface Employee extends EmployeeListItem {
   verifiedByUserId: number | null;
   verifiedAt: string | null;
   hrRemarks: string | null;
+  university: string | null;
+  studentId: string | null;
+  major: string | null;
+  skills: string | null;
+  academicTutor: string | null;
+  projectTitle: string | null;
+  projectSummary: string | null;
+  internshipStart: string | null;
+  internshipEnd: string | null;
+  letterSignedAt: string | null;
   dependants: Dependant[];
   qualifications: Qualification[];
   previousEmployments: PreviousEmployment[];
@@ -497,3 +507,21 @@ export interface AuditEntry {
 }
 
 export type CompanySettings = Record<string, string>;
+
+export type InternPhase = 'starting' | 'active' | 'completed' | 'unscheduled';
+export interface InternListItem {
+  id: number;
+  employeeCode: string;
+  firstName: string;
+  lastName: string;
+  status: 'active' | 'inactive';
+  university: string | null;
+  major: string | null;
+  internshipStart: string | null;
+  internshipEnd: string | null;
+  letterSignedAt: string | null;
+  documentChecklist: Record<string, { na?: boolean; received?: boolean }> | null;
+  department: { id: number; name: string } | null;
+  manager: { id: number; firstName: string; lastName: string } | null;
+  phase: InternPhase;
+}
