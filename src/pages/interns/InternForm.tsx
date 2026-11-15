@@ -12,21 +12,21 @@ import { errorMessage } from '../../lib/api';
 import type { Employee } from '../../types';
 import { Field, Section, TextInput } from '../employees/onboarding/fields';
 import { NATIONALITIES, grid4 } from '../employees/onboarding/formState';
-import { INTERN_DOCS, MAJORS, MAX_FILE, type InternDocKey } from './internDocs';
+import { INTERN_DOCS, INTERN_TYPES, MAJORS, MAX_FILE, docApplies, type InternDocKey } from './internDocs';
 
 const day = (v: string | null | undefined) => (v ? v.slice(0, 10) : '');
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const blank = {
   country: 'BH' as 'BH' | 'SA', fullName: '', cprNumber: '', phone: '', personalEmail: '', nationality: 'Bahraini',
-  university: '', studentId: '', major: '', skills: '',
+  internType: '', university: '', studentId: '', major: '', skills: '',
   internshipStart: '', internshipEnd: '', departmentId: '', managerId: '', academicTutor: '', projectTitle: '', projectSummary: '',
 };
 type Form = typeof blank;
 
 const fromEmployee = (e: Employee): Form => ({
   country: e.country, fullName: e.fullNameId || `${e.firstName} ${e.lastName}`, cprNumber: e.cprNumber ?? '', phone: e.phone ?? '',
-  personalEmail: e.personalEmail ?? e.email, nationality: e.nationality ?? '', university: e.university ?? '', studentId: e.studentId ?? '',
+  personalEmail: e.personalEmail ?? e.email, nationality: e.nationality ?? '', internType: e.internType ?? '', university: e.university ?? '', studentId: e.studentId ?? '',
   major: e.major ?? '', skills: e.skills ?? '', internshipStart: day(e.internshipStart), internshipEnd: day(e.internshipEnd),
   departmentId: e.departmentId ? String(e.departmentId) : '', managerId: e.managerId ? String(e.managerId) : '',
   academicTutor: e.academicTutor ?? '', projectTitle: e.projectTitle ?? '', projectSummary: e.projectSummary ?? '',
@@ -36,7 +36,7 @@ function validate(f: Form) {
   const e: Partial<Record<keyof Form, string>> = {};
   const need = (k: keyof Form, label: string) => { if (!f[k].trim()) e[k] = `${label} is required`; };
   need('fullName', 'Full name'); need('cprNumber', 'ID number'); need('phone', 'Mobile'); need('personalEmail', 'Personal email');
-  need('university', 'University'); need('internshipStart', 'Start date'); need('internshipEnd', 'End date');
+  need('internType', 'Intern type'); if (f.internType !== 'graduate') need('university', 'University / institute'); need('internshipStart', 'Start date'); need('internshipEnd', 'End date');
   need('departmentId', 'Department'); need('managerId', 'Industry mentor');
   if (f.fullName.trim() && f.fullName.trim().split(/\s+/).length < 2) e.fullName = 'Enter the first and last name';
   const digits = f.country === 'SA' ? 10 : 9;
@@ -55,7 +55,7 @@ function toPayload(f: Form) {
     isNational: (f.country === 'BH' && f.nationality === 'Bahraini') || (f.country === 'SA' && f.nationality === 'Saudi'),
     firstName: words[0].slice(0, 50), lastName: words[words.length - 1].slice(0, 50), fullNameId: f.fullName.trim(),
     cprNumber: f.cprNumber.trim(), phone: f.phone.trim(), email, personalEmail: email, nationality: opt(f.nationality),
-    university: f.university.trim(), studentId: opt(f.studentId), major: opt(f.major), skills: opt(f.skills),
+    internType: opt(f.internType), university: opt(f.university), studentId: opt(f.studentId), major: opt(f.major), skills: opt(f.skills),
     internshipStart: f.internshipStart, internshipEnd: f.internshipEnd, hireDate: f.internshipStart,
     departmentId: Number(f.departmentId), managerId: Number(f.managerId),
     academicTutor: opt(f.academicTutor), projectTitle: opt(f.projectTitle), projectSummary: opt(f.projectSummary),
@@ -91,7 +91,7 @@ export function InternForm({ intern }: { intern?: Employee }) {
       const payload = { ...toPayload(f), documentChecklist: checklist };
       const emp = intern ? await employeesApi.update(intern.id, payload as never) : await employeesApi.create(payload);
       const problems: string[] = [];
-      for (const d of INTERN_DOCS) {
+      for (const d of INTERN_DOCS.filter((x) => docApplies(x, f.internType))) {
         const file = files[d.key];
         if (!file) continue;
         try {
@@ -145,7 +145,7 @@ export function InternForm({ intern }: { intern?: Employee }) {
 
       <Section id="docs" number={1} title="Upload documents">
         <div className={grid4}>
-          {INTERN_DOCS.filter((d) => d.key !== 'agreement').map((d) => {
+          {INTERN_DOCS.filter((d) => d.key !== 'agreement' && docApplies(d, f.internType)).map((d) => {
             const file = files[d.key];
             const onFileAlready = !file && already[d.key]?.received;
             return (
@@ -170,7 +170,13 @@ export function InternForm({ intern }: { intern?: Employee }) {
           <Field label={f.country === 'SA' ? 'ID / Iqama number' : 'CPR number'} required error={errors.cprNumber}><TextInput {...bind('cprNumber')} inputMode="numeric" maxLength={10} /></Field>
           <Field label="Mobile" required error={errors.phone}><TextInput type="tel" {...bind('phone')} maxLength={20} placeholder="+973 XXXX XXXX" /></Field>
           <Field label="Personal email" required error={errors.personalEmail}><TextInput type="email" {...bind('personalEmail')} maxLength={100} /></Field>
-          <Field label="University / institute" required error={errors.university}>
+          <Field label="Intern type" required error={errors.internType}>
+            <select className="input" value={f.internType} onChange={(e) => set('internType', e.target.value)}>
+              <option value="">Select…</option>
+              {INTERN_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+            </select>
+          </Field>
+          <Field label="University / institute" required={f.internType !== 'graduate'} error={errors.university}>
             <TextInput {...bind('university')} maxLength={150} list="vt-universities" />
             <datalist id="vt-universities">{['Bahrain Polytechnic', 'University of Bahrain', 'Ahlia University', 'AMA International University'].map((u) => <option key={u} value={u} />)}</datalist>
           </Field>
