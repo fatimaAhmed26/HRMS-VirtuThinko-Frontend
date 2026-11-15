@@ -15,12 +15,12 @@ import { fmtDate } from '../../lib/format';
 import { P } from '../../lib/permissions';
 import type { InternListItem } from '../../types';
 import { ChecklistDialog } from './ChecklistDialog';
-import { INTERN_DOCS } from './internDocs';
+import { INTERN_DOCS, docApplies } from './internDocs';
 
 type Filter = 'all' | 'starting' | 'active' | 'completed';
 const FILTERS: [Filter, string][] = [['all', 'All'], ['starting', 'Starting soon'], ['active', 'Active'], ['completed', 'Completed']];
 
-const missing = (i: InternListItem) => INTERN_DOCS.filter((d) => !i.documentChecklist?.[d.key]?.received).length;
+const missing = (i: InternListItem) => INTERN_DOCS.filter((d) => docApplies(d, i.internType) && !i.documentChecklist?.[d.key]?.received).length;
 const daysTo = (date: string) => dayjs(date).startOf('day').diff(dayjs().startOf('day'), 'day');
 
 function status(i: InternListItem): [string, string] {
@@ -90,7 +90,7 @@ export default function InternsList() {
                       <td><span className={`whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium ${cls}`}>{label}</span></td>
                       <td>
                         <span className="flex max-w-36 flex-wrap gap-1">
-                          {INTERN_DOCS.map((d) => (
+                          {INTERN_DOCS.filter((d) => docApplies(d, i.internType)).map((d) => (
                             <span key={d.key} className={clsx('rounded px-1.5 py-0.5 text-[11px] font-medium', i.documentChecklist?.[d.key]?.received ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700')}>{d.short}</span>
                           ))}
                         </span>
@@ -112,7 +112,7 @@ export default function InternsList() {
         )}
         <p className="mt-3 text-xs text-slate-500">
           <span className="rounded bg-green-50 px-1.5 py-0.5 font-medium text-green-700">CV</span> received ·{' '}
-          <span className="rounded bg-red-50 px-1.5 py-0.5 font-medium text-red-700">SLP</span> missing
+          <span className="rounded bg-red-50 px-1.5 py-0.5 font-medium text-red-700">CLP</span> missing
         </p>
       </Card>
 
