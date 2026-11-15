@@ -5,7 +5,7 @@ import * as employeesApi from '../../api/employees';
 import { ErrorMessage } from '../../components/ui/Feedback';
 import { Modal } from '../../components/ui/Modal';
 import type { InternListItem } from '../../types';
-import { INTERN_DOCS, MAX_FILE, type InternDocKey } from './internDocs';
+import { INTERN_DOCS, MAX_FILE, docApplies, type InternDocKey } from './internDocs';
 
 export function ChecklistDialog({ intern, canEdit, onClose }: { intern: InternListItem | null; canEdit: boolean; onClose: () => void }) {
   const qc = useQueryClient();
@@ -31,7 +31,7 @@ export function ChecklistDialog({ intern, canEdit, onClose }: { intern: InternLi
       {intern && (
         <div className="space-y-3">
           <ul className="divide-y divide-slate-100">
-            {INTERN_DOCS.map((d) => {
+            {INTERN_DOCS.filter((d) => docApplies(d, intern.internType)).map((d) => {
               const received = intern.documentChecklist?.[d.key]?.received;
               const busy = upload.isPending && upload.variables?.key === d.key;
               return (
