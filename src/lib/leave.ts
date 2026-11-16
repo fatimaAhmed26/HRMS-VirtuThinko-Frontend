@@ -33,6 +33,12 @@ export function countDays(start: string, end: string, workingDaysOnly: boolean, 
   return count;
 }
 
+// A request can't run longer than this. Checked before counting, so a year still being typed (e.g. 0002) doesn't freeze the page
+export const spanOk = (start: string, end: string) => {
+  const n = daysBetween(start, end);
+  return n >= 0 && n <= 730;
+};
+
 export const inRange = (key: string, start: string, end: string) => key >= dateKey(start) && key <= dateKey(end);
 
 // Colour per leave type (dot / chip on calendars and lists)
