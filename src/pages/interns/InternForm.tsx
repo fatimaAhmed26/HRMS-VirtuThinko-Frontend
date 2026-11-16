@@ -19,14 +19,14 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const blank = {
   country: 'BH' as 'BH' | 'SA', fullName: '', cprNumber: '', phone: '', personalEmail: '', nationality: 'Bahraini',
-  internType: '', university: '', studentId: '', major: '', skills: '',
+  internType: '', stipend: '', university: '', studentId: '', major: '', skills: '',
   internshipStart: '', internshipEnd: '', departmentId: '', managerId: '', academicTutor: '', projectTitle: '', projectSummary: '',
 };
 type Form = typeof blank;
 
 const fromEmployee = (e: Employee): Form => ({
   country: e.country, fullName: e.fullNameId || `${e.firstName} ${e.lastName}`, cprNumber: e.cprNumber ?? '', phone: e.phone ?? '',
-  personalEmail: e.personalEmail ?? e.email, nationality: e.nationality ?? '', internType: e.internType ?? '', university: e.university ?? '', studentId: e.studentId ?? '',
+  personalEmail: e.personalEmail ?? e.email, nationality: e.nationality ?? '', internType: e.internType ?? '', stipend: e.stipend ?? '', university: e.university ?? '', studentId: e.studentId ?? '',
   major: e.major ?? '', skills: e.skills ?? '', internshipStart: day(e.internshipStart), internshipEnd: day(e.internshipEnd),
   departmentId: e.departmentId ? String(e.departmentId) : '', managerId: e.managerId ? String(e.managerId) : '',
   academicTutor: e.academicTutor ?? '', projectTitle: e.projectTitle ?? '', projectSummary: e.projectSummary ?? '',
@@ -36,7 +36,7 @@ function validate(f: Form) {
   const e: Partial<Record<keyof Form, string>> = {};
   const need = (k: keyof Form, label: string) => { if (!f[k].trim()) e[k] = `${label} is required`; };
   need('fullName', 'Full name'); need('cprNumber', 'ID number'); need('phone', 'Mobile'); need('personalEmail', 'Personal email');
-  need('internType', 'Intern type'); if (f.internType !== 'graduate') need('university', 'University / institute'); need('internshipStart', 'Start date'); need('internshipEnd', 'End date');
+  need('internType', 'Intern type'); if (!(Number(f.stipend) > 0)) e.stipend = 'Enter the monthly stipend'; if (f.internType !== 'graduate') need('university', 'University / institute'); need('internshipStart', 'Start date'); need('internshipEnd', 'End date');
   need('departmentId', 'Department'); need('managerId', 'Industry mentor');
   if (f.fullName.trim() && f.fullName.trim().split(/\s+/).length < 2) e.fullName = 'Enter the first and last name';
   const digits = f.country === 'SA' ? 10 : 9;
@@ -55,7 +55,7 @@ function toPayload(f: Form) {
     isNational: (f.country === 'BH' && f.nationality === 'Bahraini') || (f.country === 'SA' && f.nationality === 'Saudi'),
     firstName: words[0].slice(0, 50), lastName: words[words.length - 1].slice(0, 50), fullNameId: f.fullName.trim(),
     cprNumber: f.cprNumber.trim(), phone: f.phone.trim(), email, personalEmail: email, nationality: opt(f.nationality),
-    internType: opt(f.internType), university: opt(f.university), studentId: opt(f.studentId), major: opt(f.major), skills: opt(f.skills),
+    internType: opt(f.internType), stipend: Number(f.stipend) || null, university: opt(f.university), studentId: opt(f.studentId), major: opt(f.major), skills: opt(f.skills),
     internshipStart: f.internshipStart, internshipEnd: f.internshipEnd, hireDate: f.internshipStart,
     departmentId: Number(f.departmentId), managerId: Number(f.managerId),
     academicTutor: opt(f.academicTutor), projectTitle: opt(f.projectTitle), projectSummary: opt(f.projectSummary),
@@ -180,6 +180,7 @@ export function InternForm({ intern }: { intern?: Employee }) {
             <TextInput {...bind('university')} maxLength={150} list="vt-universities" />
             <datalist id="vt-universities">{['Bahrain Polytechnic', 'University of Bahrain', 'Ahlia University', 'AMA International University'].map((u) => <option key={u} value={u} />)}</datalist>
           </Field>
+          <Field label={`Monthly stipend (${f.country === 'SA' ? 'SAR' : 'BHD'})`} required error={errors.stipend}><TextInput {...bind('stipend')} type="number" min="0" step="0.001" /></Field>
           <Field label="Student ID"><TextInput {...bind('studentId')} maxLength={30} /></Field>
           <Field label="Major">
             <TextInput {...bind('major')} maxLength={100} list="vt-majors" />
