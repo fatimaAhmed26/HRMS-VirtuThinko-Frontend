@@ -29,6 +29,8 @@ import PublicHolidays from './pages/leave/PublicHolidays';
 import LeavePolicy from './pages/leave/LeavePolicy';
 import LeavePlanner from './pages/leave/LeavePlanner';
 import Approvals from './pages/leave/Approvals';
+import LeaveRequestDetail from './pages/leave/LeaveRequestDetail';
+import { NeedsEmployee } from './components/leave/NeedsEmployee';
 import HowLeaveWorks from './pages/leave/HowLeaveWorks';
 import PayrollRuns from './pages/payroll/PayrollRuns';
 import PayrollRunDetail from './pages/payroll/PayrollRunDetail';
@@ -73,19 +75,22 @@ export default function App() {
 
           {/* ───── Leave module (shared by both views) ───── */}
           <Route path="leave">
-            <Route index element={<LeaveDashboard />} />
             <Route path="calendar" element={<CompanyCalendar />} />
             <Route path="holidays" element={<PublicHolidays />} />
             <Route path="policy" element={<LeavePolicy />} />
             <Route path="how-it-works" element={<HowLeaveWorks />} />
-            <Route element={<RequirePermission any={[P.leaveRequest]} />}>
-              <Route path="request" element={<RequestLeave />} />
-              <Route path="planner" element={<LeavePlanner />} />
-            </Route>
+            <Route path="requests/:id" element={<LeaveRequestDetail />} />
             <Route element={<RequirePermission any={[P.leaveApprove, P.leaveManage]} />}>
               <Route path="approvals" element={<Approvals />} />
             </Route>
-            <Route path="data" element={<LeavesData />} />
+            <Route element={<NeedsEmployee />}>
+              <Route index element={<LeaveDashboard />} />
+              <Route element={<RequirePermission any={[P.leaveRequest]} />}>
+                <Route path="request" element={<RequestLeave />} />
+                <Route path="planner" element={<LeavePlanner />} />
+              </Route>
+              <Route path="data" element={<LeavesData />} />
+            </Route>
           </Route>
 
           {/* ───── HR view ───── */}
