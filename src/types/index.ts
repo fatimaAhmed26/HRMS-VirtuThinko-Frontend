@@ -164,6 +164,7 @@ export interface Employee extends EmployeeListItem {
   internshipStart: string | null;
   internshipEnd: string | null;
   letterSignedAt: string | null;
+  stipend: string | null;
   dependants: Dependant[];
   qualifications: Qualification[];
   previousEmployments: PreviousEmployment[];
@@ -371,7 +372,8 @@ export interface PayrollRun {
   period: string; // "2026-11"
   entity: Entity;
   status: PayrollStatus;
-  warnings: { employeeCode?: string; name?: string; reason: string }[] | null;
+  warnings: { employeeId?: number; employee?: string; message: string; skipped?: boolean }[] | null;
+  totals?: PayTotal[];
   approvedAt: string | null;
   processedAt: string | null;
   paidAt: string | null;
@@ -522,8 +524,13 @@ export interface InternListItem {
   internshipStart: string | null;
   internshipEnd: string | null;
   letterSignedAt: string | null;
+  stipend: string | null;
   documentChecklist: Record<string, { na?: boolean; received?: boolean }> | null;
   department: { id: number; name: string } | null;
   manager: { id: number; firstName: string; lastName: string } | null;
   phase: InternPhase;
 }
+
+export interface PayTotal { currency: string; employees: number; gross: string | null; deductions: string | null; net: string | null }
+export interface InternStipendRow { employeeId: number; employeeCode: string; name: string; university: string | null; monthlyStipend: string; paidDays: number; amount: string }
+export interface InternStipends { period: string; entity: Entity; currency: string; rows: InternStipendRow[]; total: string }
