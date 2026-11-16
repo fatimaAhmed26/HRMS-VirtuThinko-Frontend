@@ -27,6 +27,9 @@ export interface Department {
   id: number;
   name: string;
   managerId: number | null;
+  location?: string | null;
+  manager?: { id: number; firstName: string; lastName: string } | null;
+  _count?: { employees: number };
 }
 
 export interface ClientCompany {
