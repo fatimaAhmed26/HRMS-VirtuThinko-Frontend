@@ -37,7 +37,7 @@ export function DateRangeSection({ value, onChange, holidays, minDate }: {
         <div>
           <label className="label" htmlFor="startDate">Start date</label>
           <input id="startDate" type="date" className="input" min={minDate} value={value.start ?? ''}
-            onChange={(e) => { const s = e.target.value || null; onChange({ start: s, end: value.end && s && value.end >= s ? value.end : null }); if (s) setMonth(s.slice(0, 7)); }} />
+            onChange={(e) => { const s = e.target.value || null; onChange({ start: s, end: value.end && s && value.end >= s ? value.end : null }); if (s && s >= '2000-01-01') setMonth(s.slice(0, 7)); }} />
         </div>
         <div>
           <label className="label" htmlFor="endDate">End date</label>
