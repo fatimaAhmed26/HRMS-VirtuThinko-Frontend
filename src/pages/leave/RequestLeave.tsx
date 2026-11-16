@@ -10,7 +10,7 @@ import { Button } from '../../components/ui/Button';
 import { EmptyState, ErrorMessage } from '../../components/ui/Feedback';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { Loading } from '../../components/ui/Spinner';
-import { countDays, daysBetween, noticeText, todayKey } from '../../lib/leave';
+import { countDays, daysBetween, noticeText, spanOk, todayKey } from '../../lib/leave';
 
 // Request leave (design screen 31). The backend checks every rule again when the request is sent.
 export default function RequestLeave() {
@@ -30,9 +30,11 @@ export default function RequestLeave() {
   const [file, setFile] = useState<File | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
 
-  const days = type && range.start && range.end ? countDays(range.start, range.end, type.countWorkingDays, holidaySet) : 0;
+  const datesOk = !!range.start && !!range.end && spanOk(range.start, range.end);
+  const days = type && datesOk && range.start && range.end ? countDays(range.start, range.end, type.countWorkingDays, holidaySet) : 0;
   const checks: Check[] = [];
-  if (type && range.start && range.end) {
+  if (type && range.start && range.end && !datesOk) checks.push({ ok: 'bad', text: 'Check the dates. A request is up to 2 years long and the end date can\'t be before the start.' });
+  if (type && range.start && range.end && datesOk) {
     checks.push({ ok: days > 0 ? 'ok' : 'bad', text: days > 0 ? `${days} ${type.countWorkingDays ? 'working' : 'calendar'} day${days === 1 ? '' : 's'}` : 'The selected dates contain no working days' });
     if (type.allowance === 'yearly' && balance?.remaining !== undefined) {
       const left = balance.remaining - days;
