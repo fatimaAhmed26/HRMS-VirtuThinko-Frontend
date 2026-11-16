@@ -12,7 +12,7 @@ import { EmptyState, ErrorMessage } from '../../components/ui/Feedback';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { Loading } from '../../components/ui/Spinner';
 import { fmtDate } from '../../lib/format';
-import { addDays, countDays, daysBetween, dateKey, todayKey } from '../../lib/leave';
+import { addDays, countDays, daysBetween, dateKey, spanOk, todayKey } from '../../lib/leave';
 
 const RESERVABLE = ['ANNUAL', 'HAJJ'];
 const REMINDER_DAYS = 20;
@@ -36,9 +36,11 @@ export default function LeavePlanner() {
   });
   const remove = useMutation({ mutationFn: leaveApi.cancelReservation, onSuccess: refresh });
 
-  const days = type && range.start && range.end ? countDays(range.start, range.end, type.countWorkingDays, holidaySet) : 0;
+  const datesOk = !!range.start && !!range.end && spanOk(range.start, range.end);
+  const days = type && datesOk && range.start && range.end ? countDays(range.start, range.end, type.countWorkingDays, holidaySet) : 0;
   const checks: Check[] = [];
-  if (type && range.start && range.end) {
+  if (type && range.start && range.end && !datesOk) checks.push({ ok: 'bad', text: 'Check the dates. A request is up to 2 years long and the end date can\'t be before the start.' });
+  if (type && range.start && range.end && datesOk) {
     checks.push({ ok: days > 0 ? 'ok' : 'bad', text: `${days} ${type.countWorkingDays ? 'working' : 'calendar'} days` });
     if (balance?.remaining !== undefined) {
       checks.push(days <= balance.remaining ? { ok: 'ok', text: `${balance.remaining} days available this year` } : { ok: 'warn', text: `Only ${balance.remaining} days available this year` });
