@@ -2,7 +2,7 @@
 import { api, setAccessToken } from '../lib/api';
 import type { AuthUser } from '../types';
 
-export interface LoginResponse {
+interface LoginResponse {
   accessToken: string;
   user: AuthUser;
 }

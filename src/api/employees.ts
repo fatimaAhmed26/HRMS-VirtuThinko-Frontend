@@ -2,7 +2,7 @@
 import { api, downloadFile } from '../lib/api';
 import type { DirectoryEntry, Employee, EmployeeListItem, EmploymentType, Entity, InternListItem, Paginated } from '../types';
 
-export interface EmployeeFilters {
+interface EmployeeFilters {
   search?: string;
   departmentId?: number;
   jobTitle?: string;

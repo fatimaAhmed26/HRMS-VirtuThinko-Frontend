@@ -3,7 +3,6 @@ import { api } from '../lib/api';
 import type { CalendarEntry, Entity, LeaveBalance, LeaveRequest, LeaveReservation, LeaveStatus, LeaveType, Paginated, PublicHoliday } from '../types';
 
 export const types = (country: Entity) => api.get<LeaveType[]>('/leave/types', { params: { country } }).then((r) => r.data);
-export const updateType = (id: number, data: Partial<LeaveType>) => api.patch<LeaveType>(`/leave/types/${id}`, data).then((r) => r.data);
 
 export const holidays = (params: { country?: Entity; year?: number } = {}) =>
   api.get<PublicHoliday[]>('/leave/holidays', { params }).then((r) => r.data);
@@ -11,7 +10,7 @@ export const addHoliday = (data: { country: Entity; date: string; name: string }
   api.post<PublicHoliday>('/leave/holidays', data).then((r) => r.data);
 export const deleteHoliday = (id: number) => api.delete(`/leave/holidays/${id}`);
 
-export interface BalancesResponse {
+interface BalancesResponse {
   employee: { id: number; firstName: string; lastName: string; country: Entity };
   year: number;
   balances: LeaveBalance[];
@@ -20,7 +19,7 @@ export const myBalances = () => api.get<BalancesResponse>('/leave/balances/me').
 export const employeeBalances = (employeeId: number) =>
   api.get<BalancesResponse>(`/leave/balances/${employeeId}`).then((r) => r.data);
 
-export interface NewLeaveRequest {
+interface NewLeaveRequest {
   leaveTypeId: number;
   startDate: string; // "2026-12-20"
   endDate: string;

@@ -1,6 +1,6 @@
 // /api/payroll - runs per entity (BH / SA), payslips, allowances & deductions. HR and payroll only.
 import { api, downloadFile } from '../lib/api';
-import type { Entity, InternStipends, PayItem, PayItemType, PayrollRun, Payslip, PayrollStatus } from '../types';
+import type { Entity, InternStipends, PayItem, PayItemType, PayrollRun, PayrollStatus } from '../types';
 
 export const runs = (params: { entity?: Entity } = {}) => api.get<PayrollRun[]>('/payroll/runs', { params }).then((r) => r.data);
 export const run = (id: number) => api.get<PayrollRun>(`/payroll/runs/${id}`).then((r) => r.data);
@@ -15,11 +15,10 @@ export const transition = (id: number, action: RunAction, comment?: string) =>
 export const bankFile = (id: number) => downloadFile(`/payroll/runs/${id}/bank-file`, `bank-transfer-${id}.csv`);
 
 // one employee's payslip history (employee profile, HR / payroll only)
-export interface PayslipSummary { id: number; currency: string; grossSalary: string; netSalary: string; run: { period: string; status: PayrollStatus } }
+interface PayslipSummary { id: number; currency: string; grossSalary: string; netSalary: string; run: { period: string; status: PayrollStatus } }
 export const employeePayslips = (employeeId: number) =>
   api.get<PayslipSummary[]>('/payroll/payslips', { params: { employeeId } }).then((r) => r.data);
 
-export const payslip = (id: number) => api.get<Payslip>(`/payroll/payslips/${id}`).then((r) => r.data);
 export const payslipPdf = (id: number) => downloadFile(`/payroll/payslips/${id}/pdf`, `payslip-${id}.pdf`);
 
 export const itemTypes = () => api.get<PayItemType[]>('/payroll/item-types').then((r) => r.data);
@@ -32,7 +31,6 @@ export const createItem = (data: { employeeId: number; typeId: number; amount: n
   api.post<PayItem>('/payroll/items', data).then((r) => r.data);
 export const approveItem = (id: number) => api.post<PayItem>(`/payroll/items/${id}/approve`).then((r) => r.data);
 export const rejectItem = (id: number) => api.post<PayItem>(`/payroll/items/${id}/reject`).then((r) => r.data);
-export const stopItem = (id: number, toPeriod: string) => api.patch<PayItem>(`/payroll/items/${id}/stop`, { toPeriod }).then((r) => r.data);
 export const deleteItem = (id: number) => api.delete(`/payroll/items/${id}`);
 
 // intern stipends for one month, outside the salary run
