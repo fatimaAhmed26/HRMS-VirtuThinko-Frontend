@@ -155,6 +155,7 @@ export interface Employee extends EmployeeListItem {
   hrRemarks: string | null;
   university: string | null;
   internType: string | null;
+  isClp: boolean;
   studentId: string | null;
   major: string | null;
   skills: string | null;
@@ -520,6 +521,7 @@ export interface InternListItem {
   status: 'active' | 'inactive';
   university: string | null;
   internType: string | null;
+  isClp: boolean;
   major: string | null;
   internshipStart: string | null;
   internshipEnd: string | null;

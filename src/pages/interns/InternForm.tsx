@@ -19,14 +19,15 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const blank = {
   country: 'BH' as 'BH' | 'SA', fullName: '', cprNumber: '', phone: '', personalEmail: '', nationality: 'Bahraini',
-  internType: '', stipend: '', university: '', studentId: '', major: '', skills: '',
+  internType: '', isClp: false, stipend: '', university: '', studentId: '', major: '', skills: '',
   internshipStart: '', internshipEnd: '', departmentId: '', managerId: '', academicTutor: '', projectTitle: '', projectSummary: '',
 };
 type Form = typeof blank;
+type Text = { [K in keyof Form]: Form[K] extends string ? K : never }[keyof Form];
 
 const fromEmployee = (e: Employee): Form => ({
   country: e.country, fullName: e.fullNameId || `${e.firstName} ${e.lastName}`, cprNumber: e.cprNumber ?? '', phone: e.phone ?? '',
-  personalEmail: e.personalEmail ?? e.email, nationality: e.nationality ?? '', internType: e.internType ?? '', stipend: e.stipend ?? '', university: e.university ?? '', studentId: e.studentId ?? '',
+  personalEmail: e.personalEmail ?? e.email, nationality: e.nationality ?? '', internType: e.internType ?? '', isClp: e.isClp ?? false, stipend: e.stipend ?? '', university: e.university ?? '', studentId: e.studentId ?? '',
   major: e.major ?? '', skills: e.skills ?? '', internshipStart: day(e.internshipStart), internshipEnd: day(e.internshipEnd),
   departmentId: e.departmentId ? String(e.departmentId) : '', managerId: e.managerId ? String(e.managerId) : '',
   academicTutor: e.academicTutor ?? '', projectTitle: e.projectTitle ?? '', projectSummary: e.projectSummary ?? '',
@@ -34,7 +35,7 @@ const fromEmployee = (e: Employee): Form => ({
 
 function validate(f: Form) {
   const e: Partial<Record<keyof Form, string>> = {};
-  const need = (k: keyof Form, label: string) => { if (!f[k].trim()) e[k] = `${label} is required`; };
+  const need = (k: Text, label: string) => { if (!f[k].trim()) e[k] = `${label} is required`; };
   need('fullName', 'Full name'); need('cprNumber', 'ID number'); need('phone', 'Mobile'); need('personalEmail', 'Personal email');
   need('internType', 'Intern type'); if (!(Number(f.stipend) > 0)) e.stipend = 'Enter the monthly stipend'; if (f.internType !== 'graduate') need('university', 'University / institute'); need('internshipStart', 'Start date'); need('internshipEnd', 'End date');
   need('departmentId', 'Department'); need('managerId', 'Industry mentor');
@@ -55,7 +56,7 @@ function toPayload(f: Form) {
     isNational: (f.country === 'BH' && f.nationality === 'Bahraini') || (f.country === 'SA' && f.nationality === 'Saudi'),
     firstName: words[0].slice(0, 50), lastName: words[words.length - 1].slice(0, 50), fullNameId: f.fullName.trim(),
     cprNumber: f.cprNumber.trim(), phone: f.phone.trim(), email, personalEmail: email, nationality: opt(f.nationality),
-    internType: opt(f.internType), stipend: Number(f.stipend) || null, university: opt(f.university), studentId: opt(f.studentId), major: opt(f.major), skills: opt(f.skills),
+    internType: opt(f.internType), isClp: f.isClp, stipend: Number(f.stipend) || null, university: opt(f.university), studentId: opt(f.studentId), major: opt(f.major), skills: opt(f.skills),
     internshipStart: f.internshipStart, internshipEnd: f.internshipEnd, hireDate: f.internshipStart,
     departmentId: Number(f.departmentId), managerId: Number(f.managerId),
     academicTutor: opt(f.academicTutor), projectTitle: opt(f.projectTitle), projectSummary: opt(f.projectSummary),
@@ -75,7 +76,7 @@ export function InternForm({ intern }: { intern?: Employee }) {
   const mentors = useQuery({ queryKey: ['employees', 'managers'], queryFn: () => employeesApi.list({ status: 'active', pageSize: 100 }) });
 
   const set = <K extends keyof Form>(k: K, v: Form[K]) => setForm((p) => ({ ...p, [k]: v }));
-  const bind = (k: keyof Form) => ({ value: f[k], onChange: (v: string) => set(k, v as never), invalid: submitted && !!errors[k] });
+  const bind = (k: Text) => ({ value: f[k], onChange: (v: string) => set(k, v as never), invalid: submitted && !!errors[k] });
   const errors = submitted ? validate(f) : {};
   const onFile = (key: InternDocKey, file: File | null) => {
     if (file && file.size > MAX_FILE) return setFileError(`"${file.name}" is larger than 5 MB`);
@@ -91,7 +92,7 @@ export function InternForm({ intern }: { intern?: Employee }) {
       const payload = { ...toPayload(f), documentChecklist: checklist };
       const emp = intern ? await employeesApi.update(intern.id, payload as never) : await employeesApi.create(payload);
       const problems: string[] = [];
-      for (const d of INTERN_DOCS.filter((x) => docApplies(x, f.internType))) {
+      for (const d of INTERN_DOCS.filter((x) => docApplies(x, f))) {
         const file = files[d.key];
         if (!file) continue;
         try {
@@ -145,7 +146,7 @@ export function InternForm({ intern }: { intern?: Employee }) {
 
       <Section id="docs" number={1} title="Upload documents">
         <div className={grid4}>
-          {INTERN_DOCS.filter((d) => d.key !== 'agreement' && docApplies(d, f.internType)).map((d) => {
+          {INTERN_DOCS.filter((d) => d.key !== 'agreement' && docApplies(d, f)).map((d) => {
             const file = files[d.key];
             const onFileAlready = !file && already[d.key]?.received;
             return (
@@ -176,6 +177,10 @@ export function InternForm({ intern }: { intern?: Employee }) {
               {INTERN_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
             </select>
           </Field>
+          <label className="flex items-start gap-2 self-end pb-2 text-sm sm:col-span-2">
+            <input type="checkbox" className="mt-0.5 h-4 w-4 accent-brand-600" checked={f.isClp} onChange={(e) => set('isClp', e.target.checked)} />
+            <span>Part of the CLP (Cooperative Learning Project, Bahrain Polytechnic)<span className="block text-xs text-slate-500">Optional. Ticking it asks for the CLP document.</span></span>
+          </label>
           <Field label="University / institute" required={f.internType !== 'graduate'} error={errors.university}>
             <TextInput {...bind('university')} maxLength={150} list="vt-universities" />
             <datalist id="vt-universities">{['Bahrain Polytechnic', 'University of Bahrain', 'Ahlia University', 'AMA International University'].map((u) => <option key={u} value={u} />)}</datalist>

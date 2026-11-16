@@ -31,7 +31,7 @@ export function ChecklistDialog({ intern, canEdit, onClose }: { intern: InternLi
       {intern && (
         <div className="space-y-3">
           <ul className="divide-y divide-slate-100">
-            {INTERN_DOCS.filter((d) => docApplies(d, intern.internType)).map((d) => {
+            {INTERN_DOCS.filter((d) => docApplies(d, intern)).map((d) => {
               const received = intern.documentChecklist?.[d.key]?.received;
               const busy = upload.isPending && upload.variables?.key === d.key;
               return (
