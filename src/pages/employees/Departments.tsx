@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Pencil, Plus } from 'lucide-react';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import * as employeesApi from '../../api/employees';
 import * as orgApi from '../../api/organization';
 import { useAuth } from '../../auth/useAuth';
@@ -107,6 +108,7 @@ export default function Departments() {
                     <td>{d._count?.employees ?? 0}</td>
                     <td>{d.location || <span className="text-slate-400">Not set</span>}</td>
                     <td className="text-right">
+                      <Link to={`/departments/${d.id}/job-titles`}><Button variant="ghost">Job titles</Button></Link>
                       {canManage && (
                         <Button variant="ghost" onClick={() => setEditing(d)}><Pencil className="h-4 w-4" /> Edit</Button>
                       )}
@@ -118,8 +120,6 @@ export default function Departments() {
           </div>
         )}
       </Card>
-
-      <p className="mt-4 text-xs text-slate-500">Job titles, grades and salary bands are not set up yet.</p>
 
       {editing && <DepartmentDialog dept={editing === 'new' ? null : editing} onClose={() => setEditing(null)} />}
     </>

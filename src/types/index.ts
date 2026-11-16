@@ -32,6 +32,16 @@ export interface Department {
   _count?: { employees: number };
 }
 
+export interface JobTitle {
+  id: number;
+  departmentId: number;
+  name: string;
+  grade: string | null;
+  country: 'BH' | 'SA';
+  minSalary?: string | null; // only returned to users who can view payroll
+  maxSalary?: string | null;
+}
+
 export interface ClientCompany {
   id: number;
   name: string;
