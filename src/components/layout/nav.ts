@@ -52,6 +52,7 @@ export const HR_NAV: NavSection[] = [
       { label: 'Payroll run', to: '/payroll' },
       { label: 'Changes this month', to: '/payroll/changes' },
       { label: 'Payslips', to: '/payroll/payslips' },
+      { label: 'Intern stipends', to: '/payroll/stipends' },
       { label: 'History', to: '/payroll/history' },
       { label: 'Settings', to: '/payroll/settings', perms: [P.payrollEdit] },
     ],
