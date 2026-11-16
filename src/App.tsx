@@ -36,6 +36,7 @@ import ChangesThisMonth from './pages/payroll/ChangesThisMonth';
 import Payslips from './pages/payroll/Payslips';
 import PayrollHistory from './pages/payroll/PayrollHistory';
 import PayrollSettings from './pages/payroll/PayrollSettings';
+import InternStipends from './pages/payroll/InternStipends';
 import CompanySettings from './pages/settings/CompanySettings';
 import Organization from './pages/settings/Organization';
 import Users from './pages/settings/Users';
@@ -119,6 +120,7 @@ export default function App() {
             <Route path="runs/:id" element={<PayrollRunDetail />} />
             <Route path="changes" element={<ChangesThisMonth />} />
             <Route path="payslips" element={<Payslips />} />
+            <Route path="stipends" element={<InternStipends />} />
             <Route path="history" element={<PayrollHistory />} />
             <Route path="settings" element={<PayrollSettings />} />
           </Route>
