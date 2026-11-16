@@ -1,6 +1,6 @@
 // /api/payroll - runs per entity (BH / SA), payslips, allowances & deductions. HR and payroll only.
 import { api, downloadFile } from '../lib/api';
-import type { Entity, PayItem, PayItemType, PayrollRun, Payslip, PayrollStatus } from '../types';
+import type { Entity, InternStipends, PayItem, PayItemType, PayrollRun, Payslip, PayrollStatus } from '../types';
 
 export const runs = (params: { entity?: Entity } = {}) => api.get<PayrollRun[]>('/payroll/runs', { params }).then((r) => r.data);
 export const run = (id: number) => api.get<PayrollRun>(`/payroll/runs/${id}`).then((r) => r.data);
@@ -34,3 +34,7 @@ export const approveItem = (id: number) => api.post<PayItem>(`/payroll/items/${i
 export const rejectItem = (id: number) => api.post<PayItem>(`/payroll/items/${id}/reject`).then((r) => r.data);
 export const stopItem = (id: number, toPeriod: string) => api.patch<PayItem>(`/payroll/items/${id}/stop`, { toPeriod }).then((r) => r.data);
 export const deleteItem = (id: number) => api.delete(`/payroll/items/${id}`);
+
+// intern stipends for one month, outside the salary run
+export const stipends = (period: string, entity: Entity) =>
+  api.get<InternStipends>('/payroll/stipends', { params: { period, entity } }).then((r) => r.data);
