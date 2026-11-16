@@ -22,24 +22,6 @@ export interface AuthUser {
   permissions: string[];
 }
 
-export interface UserAccount {
-  id: number;
-  username: string;
-  email: string;
-  status: 'active' | 'inactive';
-  entityScope: 'ALL' | Entity;
-  lastLoginAt: string | null;
-  employee?: { id: number; firstName: string; lastName: string; employeeCode: string } | null;
-  roles: { id: number; name: string }[];
-}
-
-export interface Role {
-  id: number;
-  name: string;
-  description: string | null;
-  permissions?: string[];
-}
-
 // ───── organisation ─────
 export interface Department {
   id: number;
@@ -341,7 +323,7 @@ export interface HrDocument {
 // ───── payroll ─────
 export type PayrollStatus = 'draft' | 'under_review' | 'approved' | 'processed' | 'paid';
 
-export interface PayLine {
+interface PayLine {
   code: string;
   name: string;
   amount: number;
@@ -497,20 +479,6 @@ export interface EmployeeHome {
   unreadNotifications: number;
   announcements: Announcement[];
 }
-
-// ───── audit / settings ─────
-export interface AuditEntry {
-  id: number;
-  action: string;
-  entity: string;
-  entityId: string;
-  changes: unknown;
-  ip: string | null;
-  createdAt: string;
-  actor?: { id: number; username: string } | null;
-}
-
-export type CompanySettings = Record<string, string>;
 
 export type InternPhase = 'starting' | 'active' | 'completed' | 'unscheduled';
 export interface InternListItem {

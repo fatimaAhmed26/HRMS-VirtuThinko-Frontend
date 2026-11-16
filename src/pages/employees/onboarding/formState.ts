@@ -4,14 +4,14 @@ import type { Dependant, Entity, MaritalStatus } from '../../../types';
 export type Team = 'BH' | 'SA' | 'OUT'; // VirtuThinko W.L.L. / VirtuThinko Company / Outsourced to client
 export type YesNo = 'yes' | 'no' | '';
 
-export interface DependantRow { fullName: string; relationship: Dependant['relationship']; birthDate: string; nationality: string; idNumber: string }
-export interface EducationRow { title: string; institution: string; country: string; year: string; grade: string }
-export interface CertificationRow { title: string; institution: string; obtainedDate: string; expiryDate: string }
-export interface EmployerRow {
+interface DependantRow { fullName: string; relationship: Dependant['relationship']; birthDate: string; nationality: string; idNumber: string }
+interface EducationRow { title: string; institution: string; country: string; year: string; grade: string }
+interface CertificationRow { title: string; institution: string; obtainedDate: string; expiryDate: string }
+interface EmployerRow {
   employerName: string; jobTitle: string; fromDate: string; toDate: string; reasonForLeaving: string;
   refName: string; refJobTitle: string; refPhone: string; refEmail: string;
 }
-export interface ChecklistRow { na: boolean; received: boolean }
+interface ChecklistRow { na: boolean; received: boolean }
 
 export const emptyDependant = (): DependantRow => ({ fullName: '', relationship: 'Spouse', birthDate: '', nationality: '', idNumber: '' });
 export const emptyEducation = (): EducationRow => ({ title: '', institution: '', country: '', year: '', grade: '' });

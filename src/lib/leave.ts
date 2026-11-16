@@ -59,7 +59,7 @@ export const typeColor = (code: string) => TYPE_COLOR[code] ?? 'bg-slate-100 tex
 
 
 // The backend stores one row per holiday day; group consecutive days with the same name
-export interface HolidayRange {
+interface HolidayRange {
   name: string;
   start: string;
   end: string;
