@@ -17,3 +17,6 @@ export const COUNTRY_NAMES: Record<string, string> = { BH: 'Bahrain', SA: 'Saudi
 // "pending_manager" -> "Pending manager"
 export const humanize = (s: string) => (s.charAt(0).toUpperCase() + s.slice(1)).replace(/_/g, ' ');
 export const yesNo = (v: boolean | null | undefined) => (v === true ? 'Yes' : v === false ? 'No' : null);
+
+export const monthName = (p: string) => new Date(`${p}-01T00:00:00Z`).toLocaleDateString('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+export const currencyOf = (entity: string) => (entity === 'SA' ? 'SAR' : 'BHD');
