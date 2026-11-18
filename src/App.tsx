@@ -23,6 +23,8 @@ import InternsList from './pages/interns/InternsList';
 import Departments from './pages/employees/Departments';
 import JobTitles from './pages/employees/JobTitles';
 import Contracts from './pages/employees/Contracts';
+import ContractForm from './pages/contracts/ContractForm';
+import ContractDetail from './pages/contracts/ContractDetail';
 import ImportForm from './pages/employees/ImportForm';
 import EditEmployee from './pages/employees/EditEmployee';
 import LeaveDashboard from './pages/leave/LeaveDashboard';
@@ -128,6 +130,10 @@ export default function App() {
           </Route>
           <Route element={<RequirePermission any={[P.contractView]} />}>
             <Route path="contracts" element={<Contracts />} />
+            <Route path="contracts/:id" element={<ContractDetail />} />
+            <Route element={<RequirePermission any={[P.contractManage]} />}>
+              <Route path="contracts/new" element={<ContractForm />} />
+            </Route>
           </Route>
 
           <Route path="payroll" element={<RequirePermission any={[P.payrollView]} />}>

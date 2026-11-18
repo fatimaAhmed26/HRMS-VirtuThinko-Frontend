@@ -295,6 +295,22 @@ export interface PublicHoliday {
 }
 
 // ───── contracts ─────
+// Salary components beyond basic, housing and transport. Bonuses are paid yearly.
+export interface SalaryItem {
+  kind: 'allowance' | 'deduction' | 'bonus';
+  label: string;
+  amount: number;
+  paid: 'monthly' | 'yearly';
+}
+
+export interface ContractTerms {
+  employingEntity: string;
+  probationMonths: number;
+  noticeDays: number;
+  annualLeaveDays: number;
+  items: SalaryItem[];
+}
+
 export interface Contract {
   id: number;
   employeeId: number;
@@ -314,6 +330,9 @@ export interface Contract {
   daysLeft?: number | null;
   notes: string | null;
   document?: { id: number; originalName: string } | null; // signed copy
+  title?: string | null; // English title, e.g. "Unlimited Employment Contract"
+  terms?: ContractTerms | null; // salary package details (hidden on "My contract")
+  signatureRequest?: { id: number; status: 'sent' | 'signed' | 'cancelled'; token: string | null; expiresAt: string; signedAt: string | null; signerName: string | null } | null;
   employee?: { id: number; employeeCode: string; firstName: string; lastName: string; country: Entity };
 }
 

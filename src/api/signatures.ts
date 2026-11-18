@@ -1,7 +1,7 @@
 // /api/signatures - documents HR sends to be signed, and the public page the signer uses
 import { api } from '../lib/api';
 
-export type SignatureKind = 'acceptance-letter' | 'proposal-form';
+export type SignatureKind = 'acceptance-letter' | 'proposal-form' | 'contract';
 
 export interface SignatureRequest {
   id: number;
