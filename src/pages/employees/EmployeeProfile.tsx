@@ -13,6 +13,7 @@ import { Modal } from '../../components/ui/Modal';
 import { Loading } from '../../components/ui/Spinner';
 import { P } from '../../lib/permissions';
 import type { Employee } from '../../types';
+import { AssetsTab } from './profile/AssetsTab';
 import { DocumentsTab } from './profile/DocumentsTab';
 import { EmergencyTab } from './profile/EmergencyTab';
 import { HistoryTab } from './profile/HistoryTab';
@@ -21,6 +22,7 @@ import { LeaveTab } from './profile/LeaveTab';
 import { LettersTab } from './profile/LettersTab';
 import { PersonalTab } from './profile/PersonalTab';
 import { SalaryTab } from './profile/SalaryTab';
+import { UploadSignTab } from './profile/UploadSignTab';
 
 const TABS = [
   { id: 'personal', label: 'Personal' },
@@ -28,6 +30,8 @@ const TABS = [
   { id: 'salary', label: 'Salary & payslips', perms: [P.payrollView] },
   { id: 'leave', label: 'Leave' },
   { id: 'documents', label: 'Documents', perms: [P.documentView] },
+  { id: 'upload', label: 'Upload & sign', perms: [P.documentView] },
+  { id: 'assets', label: 'Assets', perms: [P.assetView] },
   { id: 'letters', label: 'Letters & certificates', perms: [P.requestView, P.requestProcess] },
   { id: 'emergency', label: 'Emergency & dependants' },
   { id: 'history', label: 'History' },
@@ -148,6 +152,8 @@ export default function EmployeeProfile() {
       {tab === 'salary' && <SalaryTab emp={emp} />}
       {tab === 'leave' && <LeaveTab emp={emp} />}
       {tab === 'documents' && <DocumentsTab emp={emp} />}
+      {tab === 'upload' && <UploadSignTab emp={emp} />}
+      {tab === 'assets' && <AssetsTab emp={emp} />}
       {tab === 'letters' && <LettersTab emp={emp} initialType={letterHint} />}
       {tab === 'emergency' && <EmergencyTab emp={emp} />}
       {tab === 'history' && <HistoryTab employeeId={emp.id} />}

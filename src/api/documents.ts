@@ -26,3 +26,6 @@ export const mine = () => api.get<HrDocument[]>('/documents/me').then((r) => r.d
 export const list = (params: { employeeId?: number; category?: string; page?: number; pageSize?: number } = {}) =>
   api.get<Paginated<HrDocument>>('/documents', { params }).then((r) => r.data);
 export const download = (doc: Pick<HrDocument, 'id' | 'originalName'>) => downloadFile(`/documents/${doc.id}/download`, doc.originalName);
+
+// Asks the employee's portal login to upload or sign what is still outstanding (once a day)
+export const remind = (employeeId: number) => api.post<{ ok: boolean }>(`/documents/remind/${employeeId}`).then((r) => r.data);

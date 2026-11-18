@@ -333,6 +333,28 @@ export interface HrDocument {
   createdAt: string;
 }
 
+// ───── company assets ─────
+export type AssetCategory = 'laptop' | 'phone' | 'monitor' | 'access_card' | 'car' | 'other';
+
+export interface Asset {
+  id: number;
+  tag: string;
+  category: AssetCategory;
+  name: string;
+  serial: string | null;
+  condition: 'good' | 'fair' | 'damaged';
+  country: Entity;
+  notes: string | null;
+}
+
+export interface AssetAssignment {
+  id: number;
+  assignedAt: string;
+  returnedAt: string | null;
+  returnCondition: string | null;
+  asset: Asset;
+}
+
 // ───── payroll ─────
 export type PayrollStatus = 'draft' | 'under_review' | 'approved' | 'processed' | 'paid';
 

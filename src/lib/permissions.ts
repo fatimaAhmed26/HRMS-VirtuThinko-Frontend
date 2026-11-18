@@ -34,6 +34,8 @@ export const P = {
   roleManage: 'role:manage',
   auditView: 'audit:view',
   settingsManage: 'settings:manage',
+  assetView: 'asset:view',
+  assetManage: 'asset:manage',
 } as const;
 
 export type Permission = (typeof P)[keyof typeof P];
