@@ -50,6 +50,7 @@ export default function InternLetter() {
     mutationFn: (requestId: number) => signaturesApi.cancel(requestId),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['signatures', id] }),
   });
+  const downloadSignedCopy = useMutation({ mutationFn: (requestId: number) => signaturesApi.downloadSigned(requestId) });
   const [copiedId, setCopiedId] = useState<number | null>(null);
   function copyLink(requestId: number, token: string) {
     void navigator.clipboard.writeText(`${window.location.origin}/sign/${token}`);
@@ -118,6 +119,10 @@ export default function InternLetter() {
                     <p className="font-medium text-slate-800">{r.title}</p>
                     <p className="mt-0.5 text-slate-500">Sent {fmtDate(r.createdAt)} · <span className={clsx('rounded-full px-1.5 py-0.5', st.cls)}>{st.label}</span></p>
                     {r.signedAt && <p className="text-slate-500">Signed by {r.signerName} on {fmtDate(r.signedAt)}</p>}
+                    {r.status === 'signed' && (
+                      <button type="button" className="mt-1 text-brand-600 hover:underline"
+                        onClick={() => downloadSignedCopy.mutate(r.id)}>Download signed copy</button>
+                    )}
                     {r.token && (
                       <div className="mt-1 flex gap-3">
                         <button type="button" className="text-brand-600 hover:underline" onClick={() => copyLink(r.id, r.token!)}>
@@ -131,7 +136,7 @@ export default function InternLetter() {
               })}
             </ul>
             {!requests.data?.length && <p className="text-xs text-slate-500">Nothing sent yet.</p>}
-            <ErrorMessage error={send.error || cancelRequest.error} />
+            <ErrorMessage error={send.error || cancelRequest.error || downloadSignedCopy.error} />
           </div>
           <Button className="w-full" loading={download.isPending} disabled={!url} onClick={() => download.mutate()}>Download PDF</Button>
           {can(P.employeeEdit) && (
