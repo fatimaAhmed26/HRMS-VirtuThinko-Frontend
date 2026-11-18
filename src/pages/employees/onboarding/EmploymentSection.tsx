@@ -10,8 +10,9 @@ const LOCATIONS = ['Manama HQ', 'Riyadh office', 'Remote', 'Client site'];
 
 export function EmploymentSection(props: SectionProps & {
   departments: Department[]; managers: EmployeeListItem[]; photo: File | null; onPhoto: (file: File | null) => void;
+  employeeMode?: boolean; // the shared link: HR adds the department, line manager and work email
 }) {
-  const { f, set, errors, departments, managers, photo, onPhoto } = props;
+  const { f, set, errors, departments, managers, photo, onPhoto, employeeMode = false } = props;
   const bind = binder(props);
   const outsourced = f.team === 'OUT';
   const isSaudiNational = countryOf(f) === 'SA' && f.nationality === 'Saudi';
@@ -29,21 +30,25 @@ export function EmploymentSection(props: SectionProps & {
           <Field label="Position / job title" required error={errors.jobTitle}>
             <TextInput {...bind('jobTitle')} maxLength={100} placeholder="e.g. Software Developer" />
           </Field>
-          <Field label="Department / project" required error={errors.departmentId}>
-            <select className={select(!!errors.departmentId)} value={f.departmentId} onChange={(e) => set('departmentId', e.target.value)}>
-              <option value="">Select…</option>
-              {departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
-            </select>
-          </Field>
+          {!employeeMode && (
+            <Field label="Department / project" required error={errors.departmentId}>
+              <select className={select(!!errors.departmentId)} value={f.departmentId} onChange={(e) => set('departmentId', e.target.value)}>
+                <option value="">Select…</option>
+                {departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
+              </select>
+            </Field>
+          )}
           <Field label="Date of joining" required error={errors.hireDate}>
             <TextInput type="date" {...bind('hireDate')} />
           </Field>
-          <Field label="Line manager" required error={errors.managerId}>
-            <select className={select(!!errors.managerId)} value={f.managerId} onChange={(e) => set('managerId', e.target.value)}>
-              <option value="">Select…</option>
-              {managers.map((m) => <option key={m.id} value={m.id}>{m.firstName} {m.lastName}{m.jobTitle ? ` · ${m.jobTitle}` : ''}</option>)}
-            </select>
-          </Field>
+          {!employeeMode && (
+            <Field label="Line manager" required error={errors.managerId}>
+              <select className={select(!!errors.managerId)} value={f.managerId} onChange={(e) => set('managerId', e.target.value)}>
+                <option value="">Select…</option>
+                {managers.map((m) => <option key={m.id} value={m.id}>{m.firstName} {m.lastName}{m.jobTitle ? ` · ${m.jobTitle}` : ''}</option>)}
+              </select>
+            </Field>
+          )}
           <Field label="Employment type" required hint={outsourced ? 'Outsourced (set by the entity choice)' : undefined}>
             <select className="input" value={outsourced ? 'Outsourced' : f.employmentType} disabled={outsourced} onChange={(e) => set('employmentType', e.target.value)}>
               {outsourced ? <option>Outsourced</option> : TYPES.map((t) => <option key={t}>{t}</option>)}
@@ -53,9 +58,11 @@ export function EmploymentSection(props: SectionProps & {
             <TextInput {...bind('workLocation')} list="vt-locations" maxLength={100} placeholder={outsourced ? 'Uses the client site if empty' : 'e.g. Manama HQ'} />
             <datalist id="vt-locations">{LOCATIONS.map((l) => <option key={l} value={l} />)}</datalist>
           </Field>
-          <Field label="Work email" required hint="Used for the portal login" error={errors.email}>
-            <TextInput type="email" {...bind('email')} maxLength={100} placeholder="name@virtuthinko.com" />
-          </Field>
+          {!employeeMode && (
+            <Field label="Work email" required hint="Used for the portal login" error={errors.email}>
+              <TextInput type="email" {...bind('email')} maxLength={100} placeholder="name@virtuthinko.com" />
+            </Field>
+          )}
           <Field label="Probation ends" error={errors.probationEnd}>
             <TextInput type="date" {...bind('probationEnd')} />
           </Field>

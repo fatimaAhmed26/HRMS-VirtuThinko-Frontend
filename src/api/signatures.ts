@@ -1,5 +1,5 @@
 // /api/signatures - documents HR sends to be signed, and the public page the signer uses
-import { api, downloadFile } from '../lib/api';
+import { api } from '../lib/api';
 
 export type SignatureKind = 'acceptance-letter' | 'proposal-form';
 
@@ -25,9 +25,7 @@ export interface PublicSignature {
 }
 
 export const list = (employeeId: number) => api.get<SignatureRequest[]>('/signatures', { params: { employeeId } }).then((r) => r.data);
-export const send = (employeeId: number, kind: SignatureKind) => api.post<SignatureRequest>('/signatures', { employeeId, kind }).then((r) => r.data);
 export const cancel = (id: number) => api.post(`/signatures/${id}/cancel`);
-export const downloadSigned = (id: number) => downloadFile(`/signatures/${id}/signed-pdf`, 'Signed_document.pdf');
 
 export const publicInfo = (token: string) => api.get<PublicSignature>(`/public/signatures/${token}`).then((r) => r.data);
 export const publicDocument = (token: string) => api.get<Blob>(`/public/signatures/${token}/document`, { responseType: 'blob' }).then((r) => r.data);

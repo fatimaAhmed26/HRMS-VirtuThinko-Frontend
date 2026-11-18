@@ -6,6 +6,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import * as contractsApi from '../../api/contracts';
 import * as documentsApi from '../../api/documents';
 import * as employeesApi from '../../api/employees';
+import * as onboardingApi from '../../api/onboarding';
 import * as orgApi from '../../api/organization';
 import { useAuth } from '../../auth/useAuth';
 import { Button } from '../../components/ui/Button';
@@ -52,6 +53,12 @@ export default function AddEmployee() {
   const [fileError, setFileError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [saved, setSaved] = useState<Saved | null>(null);
+  const [sentLink, setSentLink] = useState<onboardingApi.OnboardingLinkItem | null>(null);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const createLink = useMutation({
+    mutationFn: onboardingApi.create,
+    onSuccess: (item) => { setSentLink(item); setLinkCopied(false); },
+  });
 
   const departments = useQuery({ queryKey: ['departments'], queryFn: orgApi.departments });
   const clients = useQuery({ queryKey: ['clients'], queryFn: orgApi.clients });
@@ -179,7 +186,8 @@ export default function AddEmployee() {
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <Button type="button" variant="secondary" onClick={() => navigate('/employees/import')}>Import completed form</Button>
-          <Button type="button" variant="secondary" disabled title="Coming soon">Send form to employee</Button>
+          <Button type="button" variant="secondary" loading={createLink.isPending} onClick={() => createLink.mutate()}>Send form to employee</Button>
+          <Button type="button" variant="secondary" onClick={() => navigate('/employees/forms')}>Sent forms</Button>
         </div>
         <nav aria-label="Form sections" className="mt-4 flex flex-wrap gap-2">
           {CHIPS.map(([id, label]) => (
@@ -192,6 +200,19 @@ export default function AddEmployee() {
         </nav>
       </div>
 
+      {sentLink?.token && (
+        <div className="space-y-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">
+          <p>Send this link to the new joiner. They fill in their details; HR adds the entity, department, line manager, work email and salary details afterwards.</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <code className="min-w-0 flex-1 truncate rounded bg-white px-2 py-1 text-xs">{`${window.location.origin}/form/${sentLink.token}`}</code>
+            <Button type="button" variant="secondary" onClick={() => { void navigator.clipboard.writeText(`${window.location.origin}/form/${sentLink.token}`); setLinkCopied(true); }}>
+              {linkCopied ? 'Copied' : 'Copy link'}
+            </Button>
+          </div>
+          <p className="text-xs text-blue-700">Valid for 14 days.</p>
+        </div>
+      )}
+      <ErrorMessage error={createLink.error} />
       {imported && !notice && (
         <div className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 text-sm text-blue-800">
           Filled in from <b>{imported.fileName}</b>. Check the highlighted sections, add the work email if it was not on the form, then save.

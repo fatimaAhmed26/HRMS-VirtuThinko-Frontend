@@ -60,8 +60,8 @@ export function SalarySection(props: SectionProps & { showSalary: boolean }) {
   );
 }
 
-export function ChecklistSection({ f, set, files, onFile }: SectionProps & {
-  files: Partial<Record<ChecklistKey, File>>; onFile: (key: ChecklistKey, file: File | null) => void;
+export function ChecklistSection({ f, set, files, onFile, employeeMode = false }: SectionProps & {
+  files: Partial<Record<ChecklistKey, File>>; onFile: (key: ChecklistKey, file: File | null) => void; employeeMode?: boolean;
 }) {
   const row = (key: ChecklistKey) => f.checklist[key] ?? { na: false, received: false };
   const tick = (key: ChecklistKey, change: { na?: boolean; received?: boolean }) =>
@@ -71,7 +71,7 @@ export function ChecklistSection({ f, set, files, onFile }: SectionProps & {
     <Section id="documents" number={11} title="Documents checklist">
       <div className="overflow-x-auto rounded-lg border border-slate-200">
         <table className="table">
-          <thead><tr><th>Document</th><th>File</th><th className="text-center">N/A</th><th className="text-center">HR received</th></tr></thead>
+          <thead><tr><th>Document</th><th>File</th><th className="text-center">N/A</th>{!employeeMode && <th className="text-center">HR received</th>}</tr></thead>
           <tbody>
             {CHECKLIST.map((item) => {
               const file = files[item.key];
@@ -100,10 +100,12 @@ export function ChecklistSection({ f, set, files, onFile }: SectionProps & {
                     <input type="checkbox" className="accent-brand-600" aria-label={`${item.label} not applicable`} checked={r.na}
                       onChange={(e) => { tick(item.key, { na: e.target.checked, received: false }); if (e.target.checked) onFile(item.key, null); }} />
                   </td>
-                  <td className="text-center">
-                    <input type="checkbox" className="accent-brand-600" aria-label={`${item.label} received by HR`} checked={r.received} disabled={r.na}
-                      onChange={(e) => tick(item.key, { received: e.target.checked })} />
-                  </td>
+                  {!employeeMode && (
+                    <td className="text-center">
+                      <input type="checkbox" className="accent-brand-600" aria-label={`${item.label} received by HR`} checked={r.received} disabled={r.na}
+                        onChange={(e) => tick(item.key, { received: e.target.checked })} />
+                    </td>
+                  )}
                 </tr>
               );
             })}

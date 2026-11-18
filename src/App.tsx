@@ -13,6 +13,8 @@ import Reports from './pages/hr/Reports';
 import EmployeesList from './pages/employees/EmployeesList';
 import EmployeeProfile from './pages/employees/EmployeeProfile';
 import AddEmployee from './pages/employees/AddEmployee';
+import SentForms from './pages/employees/SentForms';
+import EmployeeForm from './pages/onboarding/EmployeeForm';
 import EditIntern from './pages/interns/EditIntern';
 import { InternForm } from './pages/interns/InternForm';
 import InternLetter from './pages/interns/InternLetter';
@@ -60,6 +62,7 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/sign/:token" element={<SignDocument />} />
+      <Route path="/form/:token" element={<EmployeeForm />} />
 
       <Route element={<RequireAuth />}>
         <Route element={<AppLayout />}>
@@ -113,6 +116,7 @@ export default function App() {
           </Route>
           <Route element={<RequirePermission any={[P.employeeCreate]} />}>
             <Route path="employees/new" element={<AddEmployee />} />
+            <Route path="employees/forms" element={<SentForms />} />
             <Route path="employees/import" element={<ImportForm />} />
             <Route path="interns/new" element={<InternForm />} />
           </Route>

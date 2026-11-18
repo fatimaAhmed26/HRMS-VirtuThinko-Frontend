@@ -3,7 +3,6 @@ import clsx from 'clsx';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import * as employeesApi from '../../api/employees';
-import * as signaturesApi from '../../api/signatures';
 import type { InternLetter as Kind } from '../../api/employees';
 import { useAuth } from '../../auth/useAuth';
 import { Button } from '../../components/ui/Button';
@@ -41,21 +40,6 @@ export default function InternLetter() {
       qc.invalidateQueries({ queryKey: ['interns'] });
     },
   });
-  const requests = useQuery({ queryKey: ['signatures', id], queryFn: () => signaturesApi.list(id), enabled: intern.isSuccess });
-  const send = useMutation({
-    mutationFn: () => signaturesApi.send(id, kind),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['signatures', id] }),
-  });
-  const cancelRequest = useMutation({
-    mutationFn: (requestId: number) => signaturesApi.cancel(requestId),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['signatures', id] }),
-  });
-  const downloadSignedCopy = useMutation({ mutationFn: (requestId: number) => signaturesApi.downloadSigned(requestId) });
-  const [copiedId, setCopiedId] = useState<number | null>(null);
-  function copyLink(requestId: number, token: string) {
-    void navigator.clipboard.writeText(`${window.location.origin}/sign/${token}`);
-    setCopiedId(requestId);
-  }
   const download = useMutation({ mutationFn: () => employeesApi.internLetterDownload(id, kind, opts) });
 
   if (intern.isLoading) return <Loading />;
@@ -104,40 +88,6 @@ export default function InternLetter() {
               </label>
             </div>
           )}
-          <div className="space-y-2 border-t border-slate-100 pt-3">
-            <p className="text-sm font-semibold text-slate-800">Signatures</p>
-            {can(P.documentUpload) && (
-              <Button variant="secondary" className="w-full" loading={send.isPending} disabled={!url} onClick={() => send.mutate()}>
-                Send for signature
-              </Button>
-            )}
-            <ul className="space-y-2">
-              {(requests.data ?? []).map((r) => {
-                const st = signaturesApi.signatureStatus(r);
-                return (
-                  <li key={r.id} className="rounded-lg border border-slate-200 p-2 text-xs">
-                    <p className="font-medium text-slate-800">{r.title}</p>
-                    <p className="mt-0.5 text-slate-500">Sent {fmtDate(r.createdAt)} · <span className={clsx('rounded-full px-1.5 py-0.5', st.cls)}>{st.label}</span></p>
-                    {r.signedAt && <p className="text-slate-500">Signed by {r.signerName} on {fmtDate(r.signedAt)}</p>}
-                    {r.status === 'signed' && (
-                      <button type="button" className="mt-1 text-brand-600 hover:underline"
-                        onClick={() => downloadSignedCopy.mutate(r.id)}>Download signed copy</button>
-                    )}
-                    {r.token && (
-                      <div className="mt-1 flex gap-3">
-                        <button type="button" className="text-brand-600 hover:underline" onClick={() => copyLink(r.id, r.token!)}>
-                          {copiedId === r.id ? 'Link copied' : 'Copy link'}
-                        </button>
-                        <button type="button" className="text-slate-500 hover:underline" onClick={() => cancelRequest.mutate(r.id)}>Cancel</button>
-                      </div>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-            {!requests.data?.length && <p className="text-xs text-slate-500">Nothing sent yet.</p>}
-            <ErrorMessage error={send.error || cancelRequest.error || downloadSignedCopy.error} />
-          </div>
           <Button className="w-full" loading={download.isPending} disabled={!url} onClick={() => download.mutate()}>Download PDF</Button>
           {can(P.employeeEdit) && (
             <>
