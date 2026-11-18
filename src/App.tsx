@@ -16,6 +16,7 @@ import AddEmployee from './pages/employees/AddEmployee';
 import EditIntern from './pages/interns/EditIntern';
 import { InternForm } from './pages/interns/InternForm';
 import InternLetter from './pages/interns/InternLetter';
+import SignDocument from './pages/sign/SignDocument';
 import InternsList from './pages/interns/InternsList';
 import Departments from './pages/employees/Departments';
 import JobTitles from './pages/employees/JobTitles';
@@ -58,6 +59,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/sign/:token" element={<SignDocument />} />
 
       <Route element={<RequireAuth />}>
         <Route element={<AppLayout />}>
