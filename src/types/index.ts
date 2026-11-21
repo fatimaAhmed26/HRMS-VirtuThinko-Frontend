@@ -468,8 +468,18 @@ export interface EmployeeRequest {
   completedAt: string | null;
   createdAt: string;
   type?: { id: number; code: string; name: string; category: string };
-  employee?: { id: number; employeeCode: string; firstName: string; lastName: string };
+  employee?: { id: number; employeeCode: string; firstName: string; lastName: string; country?: Entity; department?: { name: string } | null };
+  attachment?: { id: number; originalName: string } | null;
   resultDocument?: { id: number; originalName: string; visibleToEmployee: boolean } | null;
+  handledByUserId?: number | null;
+  history?: RequestHistoryItem[]; // only on the detail view
+}
+
+// One step of a request, from the audit log (oldest first)
+export interface RequestHistoryItem {
+  action: string; // create, in_progress, generated, approved, completed, rejected, cancelled
+  at: string;
+  comment: string | null;
 }
 
 // ───── announcements & notifications ─────
@@ -485,6 +495,13 @@ export interface Announcement {
   attachmentName: string | null;
   attachmentMime: string | null;
   hasAttachment: boolean;
+}
+
+// HR view: who it is for and whether it is scheduled, live or expired
+export interface AnnouncementAdmin extends Announcement {
+  departmentIds: number[];
+  employeeIds: number[];
+  state: 'scheduled' | 'live' | 'expired';
 }
 
 // Colleague directory - work contact details only

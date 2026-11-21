@@ -9,8 +9,17 @@ export const create = (data: { typeId: number; purpose: string; details?: string
 export const mine = () => api.get<EmployeeRequest[]>('/requests/me').then((r) => r.data);
 export const cancel = (id: number) => api.post<EmployeeRequest>(`/requests/${id}/cancel`).then((r) => r.data);
 
+// HR: the queue, one request with its history, and the steps HR takes
 export const list = (params: { status?: RequestStatus; typeId?: number; employeeId?: number; page?: number; pageSize?: number } = {}) =>
   api.get<Paginated<EmployeeRequest>>('/requests', { params }).then((r) => r.data);
+export const get = (id: number) => api.get<EmployeeRequest>(`/requests/${id}`).then((r) => r.data);
+export const start = (id: number) => api.post<EmployeeRequest>(`/requests/${id}/start`).then((r) => r.data);
+export const generate = (id: number) => api.post<EmployeeRequest>(`/requests/${id}/generate`).then((r) => r.data);
+export const approve = (id: number, comment?: string) =>
+  api.post<EmployeeRequest>(`/requests/${id}/approve`, { comment: comment || undefined }).then((r) => r.data);
+export const complete = (id: number, data: { documentId?: number; comment?: string } = {}) =>
+  api.post<EmployeeRequest>(`/requests/${id}/complete`, data).then((r) => r.data);
+export const reject = (id: number, comment: string) => api.post<EmployeeRequest>(`/requests/${id}/reject`, { comment }).then((r) => r.data);
 
 // HR issues a letter from the employee profile: created, generated and closed in one step
 export const issue = (data: { employeeId: number; typeId: number; purpose: string; addressedTo?: string }) =>

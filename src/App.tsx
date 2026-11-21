@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import { HomeRedirect, RequireAuth, RequirePermission } from './auth/guards';
 import { AppLayout } from './components/layout/AppLayout';
 import { P } from './lib/permissions';
@@ -8,6 +8,7 @@ import NotFound from './pages/NotFound';
 import Notifications from './pages/Notifications';
 import HrDashboard from './pages/hr/Dashboard';
 import HrRequests from './pages/hr/HrRequests';
+import HrRequestDetail from './pages/hr/HrRequestDetail';
 import Announcements from './pages/hr/Announcements';
 import Reports from './pages/hr/Reports';
 import EmployeesList from './pages/employees/EmployeesList';
@@ -148,10 +149,13 @@ export default function App() {
 
           <Route element={<RequirePermission any={[P.requestView, P.requestProcess]} />}>
             <Route path="requests" element={<HrRequests />} />
+            <Route path="requests/:id" element={<HrRequestDetail />} />
           </Route>
           <Route element={<RequirePermission any={[P.announcementManage]} />}>
             <Route path="announcements" element={<Announcements />} />
           </Route>
+          {/* the notification link for an announcement opens the employee reading view */}
+          <Route path="announcements/:id" element={<Navigate to="/my/announcements" replace />} />
           <Route element={<RequirePermission any={[P.reportView]} />}>
             <Route path="reports" element={<Reports />} />
           </Route>
